@@ -1,0 +1,3 @@
+{"participant_id":"P-101","source":"meta_quest_eye_tracking","metrics":{"agency":82,"ownership":61,"latency":94,"packet_loss":1.4,"heart_rate":91,"workload":57}}
+{"participant_id":"P-101","source":"ros2_robot_telemetry","metrics":{"agency":75,"ownership":58,"latency":142,"packet_loss":3.7,"heart_rate":96,"workload":66}}
+{"participant_id":"P-102","source":"physiology_hrv_sensor","metrics":{"agency":62,"ownership":54,"latency":168,"packet_loss":5.4,"heart_rate":116,"workload":84,"safety_events":3}}

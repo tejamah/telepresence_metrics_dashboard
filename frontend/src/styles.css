@@ -296,6 +296,91 @@ button:disabled,
   color: #126b4c;
 }
 
+.relationship span.high {
+  background: #ffe0d8;
+  color: #9b321c;
+}
+
+.relationship span.medium {
+  background: #fff0cc;
+  color: #7a530c;
+}
+
+.live-panel,
+.risk-panel {
+  grid-column: span 6;
+}
+
+.live-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.live-metric {
+  border: 1px solid #edf1f3;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.live-metric span,
+.embodiment-graph span,
+.empty-state {
+  color: #63717a;
+}
+
+.live-metric strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.1rem;
+}
+
+.embodiment-graph {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.embodiment-graph > div:first-child {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.embodiment-graph strong {
+  font-size: 1.5rem;
+}
+
+.empty-state {
+  border-top: 1px solid #edf1f3;
+  padding-top: 12px;
+}
+
+.pipeline-list {
+  display: grid;
+  gap: 9px;
+}
+
+.pipeline-step {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid #edf1f3;
+  padding-top: 9px;
+}
+
+.pipeline-step strong {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 999px;
+  background: #e8f3f6;
+  color: #176b87;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -320,6 +405,10 @@ th {
 
   .panel {
     grid-column: span 12;
+  }
+
+  .live-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

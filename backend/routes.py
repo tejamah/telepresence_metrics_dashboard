@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+import asyncio
 import csv
 import io
+import math
 import statistics
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
 router = APIRouter()
@@ -52,6 +54,14 @@ class ExperimentSession(BaseModel):
     metrics: dict[str, float] = Field(default_factory=dict)
 
 
+class TelemetryEvent(BaseModel):
+    session_id: int | None = None
+    participant_id: str
+    source: str = Field(default="simulator")
+    timestamp: str | None = None
+    metrics: dict[str, float] = Field(default_factory=dict)
+
+
 @dataclass
 class StoredSession:
     id: int
@@ -65,6 +75,7 @@ class StoredSession:
 
 
 SESSIONS: list[StoredSession] = []
+TELEMETRY_STREAM: list[dict[str, Any]] = []
 
 
 def _numeric(value: Any) -> float | None:
@@ -174,6 +185,36 @@ def generate_insight(session: StoredSession) -> str:
     return f"Participant {session.participant_id} showed {', and '.join(clauses)}."
 
 
+def detect_risks(metrics: dict[str, float]) -> list[dict[str, Any]]:
+    rules = [
+        ("unstable sensor pipeline", metrics.get("packet_loss", 0) > 5, "high packet loss can desynchronize multimodal streams"),
+        ("synchronization failure", metrics.get("latency", 0) > 150, "network or rendering delay exceeds teleoperation comfort bounds"),
+        ("embodiment degradation", metrics.get("agency", 100) < 55 or metrics.get("ownership", 100) < 55, "agency or ownership has dropped below research threshold"),
+        ("cognitive overload", metrics.get("workload", 0) > 80 or metrics.get("heart_rate", 0) > 115, "workload and physiology suggest stress"),
+        ("unsafe control condition", metrics.get("safety_events", 0) >= 3, "repeated safety events require experiment review"),
+    ]
+    return [
+        {"type": name, "severity": "high" if "unsafe" in name or "failure" in name else "medium", "detail": detail}
+        for name, active, detail in rules
+        if active
+    ]
+
+
+def predict_embodiment_state(metrics: dict[str, float]) -> dict[str, Any]:
+    embodiment = _metric_score("embodiment", metrics.get("embodiment", 65))
+    agency = _metric_score("agency", metrics.get("agency", 65))
+    ownership = _metric_score("ownership", metrics.get("ownership", 65))
+    latency_penalty = max(0, min(35, (metrics.get("latency", 40) - 40) * 0.18))
+    stress_penalty = max(0, min(20, (metrics.get("workload", 50) - 55) * 0.25))
+    quality = round(max(0, min(100, statistics.mean([embodiment, agency, ownership]) - latency_penalty - stress_penalty)), 1)
+    breakdown_probability = round(max(0, min(1, (100 - quality) / 100)), 2)
+    return {
+        "predicted_embodiment_quality": quality,
+        "immersion_breakdown_probability": breakdown_probability,
+        "state": "stable" if quality >= 70 else "at_risk" if quality >= 50 else "degraded",
+    }
+
+
 def _store_session(payload: ExperimentSession) -> StoredSession:
     session = StoredSession(
         id=len(SESSIONS) + 1,
@@ -258,6 +299,39 @@ def _session_response(session: StoredSession) -> dict[str, Any]:
         "metrics": session.metrics,
         "scores": session.scores,
         "insight": session.insight,
+        "risk_events": detect_risks(session.metrics),
+        "embodiment_prediction": predict_embodiment_state(session.metrics),
+    }
+
+
+def _pearson(x_values: list[float], y_values: list[float]) -> float | None:
+    if len(x_values) < 2 or len(x_values) != len(y_values):
+        return None
+    x_mean = statistics.mean(x_values)
+    y_mean = statistics.mean(y_values)
+    numerator = sum((x - x_mean) * (y - y_mean) for x, y in zip(x_values, y_values))
+    x_variance = sum((x - x_mean) ** 2 for x in x_values)
+    y_variance = sum((y - y_mean) ** 2 for y in y_values)
+    denominator = math.sqrt(x_variance * y_variance)
+    if denominator == 0:
+        return None
+    return round(numerator / denominator, 3)
+
+
+def _correlation_pair(x_key: str, y_key: str) -> dict[str, Any]:
+    pairs = [
+        (session.metrics[x_key], session.metrics[y_key])
+        for session in SESSIONS
+        if x_key in session.metrics and y_key in session.metrics
+    ]
+    if not pairs:
+        return {"x": x_key, "y": y_key, "pearson_r": None, "n": 0}
+    x_values, y_values = zip(*pairs)
+    return {
+        "x": x_key,
+        "y": y_key,
+        "pearson_r": _pearson(list(x_values), list(y_values)),
+        "n": len(pairs),
     }
 
 
@@ -287,7 +361,23 @@ def _analytics() -> dict[str, Any]:
             "status": "observed" if averages.get("workload", 0) > 65 and averages.get("error_rate", 0) > 8 else "monitor",
         },
     ]
-    return {"relationships": relationships, "averages": averages}
+    correlations = [
+        _correlation_pair("latency", "agency"),
+        _correlation_pair("embodiment", "task_efficiency"),
+        _correlation_pair("workload", "error_rate"),
+        _correlation_pair("heart_rate", "error_rate"),
+    ]
+    risk_counts: dict[str, int] = {}
+    for session in SESSIONS:
+        for risk in detect_risks(session.metrics):
+            risk_counts[risk["type"]] = risk_counts.get(risk["type"], 0) + 1
+
+    return {
+        "relationships": relationships,
+        "averages": averages,
+        "correlations": correlations,
+        "risk_counts": risk_counts,
+    }
 
 
 @router.get("/metrics")
@@ -355,3 +445,83 @@ async def upload_csv(file: UploadFile = File(...)) -> dict[str, Any]:
 def analysis() -> dict[str, Any]:
     _seed()
     return _analytics()
+
+
+@router.get("/platform/architecture")
+def platform_architecture() -> dict[str, Any]:
+    return {
+        "name": "Intelligent Multimodal Telepresence Analytics Platform",
+        "pipeline": [
+            "VR/robot devices",
+            "sensor streaming layer",
+            "real-time processing engine",
+            "AI analytics engine",
+            "embodiment and presence scoring",
+            "research dashboard and reports",
+        ],
+        "stream_sources": [
+            "EEG",
+            "HRV",
+            "eye tracking",
+            "hand tracking",
+            "motion tracking",
+            "robot telemetry",
+            "network latency",
+            "video/audio streams",
+        ],
+        "research_modules": [
+            "dynamic embodiment graph",
+            "risk detection",
+            "digital twin replay",
+            "correlation engine",
+            "predictive modeling",
+            "AI research assistant",
+            "dataset builder",
+        ],
+    }
+
+
+@router.post("/telemetry")
+def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
+    payload = event.dict()
+    payload["timestamp"] = payload["timestamp"] or datetime.utcnow().isoformat(timespec="milliseconds")
+    payload["risk_events"] = detect_risks(payload["metrics"])
+    payload["embodiment_prediction"] = predict_embodiment_state(payload["metrics"])
+    TELEMETRY_STREAM.append(payload)
+    return payload
+
+
+@router.get("/telemetry/latest")
+def latest_telemetry() -> dict[str, Any]:
+    return {"events": TELEMETRY_STREAM[-50:]}
+
+
+@router.websocket("/ws/telemetry")
+async def telemetry_socket(websocket: WebSocket) -> None:
+    await websocket.accept()
+    _seed()
+    tick = 0
+    try:
+        while True:
+            base = SESSIONS[tick % len(SESSIONS)].metrics
+            simulated = {
+                **base,
+                "latency": round(base.get("latency", 80) + math.sin(tick / 3) * 18, 2),
+                "packet_loss": round(max(0, base.get("packet_loss", 1) + math.cos(tick / 4) * 0.7), 2),
+                "heart_rate": round(base.get("heart_rate", 90) + math.sin(tick / 2) * 5, 2),
+                "agency": round(max(0, min(100, base.get("agency", 70) - max(0, math.sin(tick / 3) * 8))), 2),
+            }
+            event = {
+                "timestamp": datetime.utcnow().isoformat(timespec="milliseconds"),
+                "participant_id": SESSIONS[tick % len(SESSIONS)].participant_id,
+                "source": "websocket_simulator",
+                "metrics": simulated,
+                "risk_events": detect_risks(simulated),
+                "embodiment_prediction": predict_embodiment_state(simulated),
+            }
+            TELEMETRY_STREAM.append(event)
+            await websocket.send_json(event)
+            tick += 1
+            await asyncio.sleep(1)
+    except WebSocketDisconnect:
+        return

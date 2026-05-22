@@ -3,9 +3,12 @@ import Dashboard from './components/Dashboard'
 import './styles.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8010'
+const WS_URL = API_URL.replace('http', 'ws')
 
 function App() {
   const [data, setData] = useState(null)
+  const [architecture, setArchitecture] = useState(null)
+  const [telemetry, setTelemetry] = useState(null)
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
@@ -25,6 +28,8 @@ function App() {
       const response = await fetch(`${API_URL}/metrics`)
       if (!response.ok) throw new Error('Unable to load metrics from the API.')
       setData(await response.json())
+      const architectureResponse = await fetch(`${API_URL}/platform/architecture`)
+      if (architectureResponse.ok) setArchitecture(await architectureResponse.json())
     } catch (event) {
       setError(event.message)
     } finally {
@@ -62,6 +67,17 @@ function App() {
     loadMetrics()
   }, [])
 
+  useEffect(() => {
+    const socket = new WebSocket(`${WS_URL}/ws/telemetry`)
+    socket.onmessage = (event) => {
+      setTelemetry(JSON.parse(event.data))
+    }
+    socket.onerror = () => {
+      setError('Live telemetry stream is unavailable. The dashboard is showing stored session data.')
+    }
+    return () => socket.close()
+  }, [])
+
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -90,7 +106,13 @@ function App() {
       {loading ? (
         <div className="loading">Loading telepresence metrics...</div>
       ) : (
-        <Dashboard latest={latest} sessions={sessions} analytics={data?.analytics} />
+        <Dashboard
+          latest={latest}
+          sessions={sessions}
+          analytics={data?.analytics}
+          architecture={architecture}
+          telemetry={telemetry}
+        />
       )}
     </main>
   )

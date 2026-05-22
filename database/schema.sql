@@ -68,3 +68,49 @@ CREATE TABLE analysis_results (
     insight TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE telemetry_streams (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    source VARCHAR(80) NOT NULL,
+    stream_type VARCHAR(80) NOT NULL,
+    timestamp TIMESTAMP NOT NULL,
+    payload JSONB NOT NULL
+);
+
+CREATE TABLE risk_events (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    risk_type VARCHAR(120) NOT NULL,
+    severity VARCHAR(30) NOT NULL,
+    detail TEXT NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE digital_twin_snapshots (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    robot_pose JSONB,
+    user_pose JSONB,
+    environment_state JSONB,
+    timestamp TIMESTAMP NOT NULL
+);
+
+CREATE TABLE vector_documents (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    document_type VARCHAR(80) NOT NULL,
+    content TEXT NOT NULL,
+    embedding_id VARCHAR(120),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE model_predictions (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    model_name VARCHAR(120) NOT NULL,
+    prediction_type VARCHAR(120) NOT NULL,
+    prediction_value FLOAT NOT NULL,
+    confidence FLOAT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

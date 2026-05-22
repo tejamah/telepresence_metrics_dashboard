@@ -1,17 +1,17 @@
 
-# Telepresence Metrics Dashboard
+# Intelligent Multimodal Telepresence Analytics Platform
 
 ## Overview
-This project is designed for Human-Robot Interaction (HRI), Telepresence, and VR research.
-It collects, analyzes, and visualizes embodiment, presence, performance, behavioral,
-physiological, and system metrics.
+This project is designed for Human-Robot Interaction (HRI), Telepresence, VR, and robotics research.
+It is evolving from a metrics dashboard into a real-time multimodal analytics platform for embodiment,
+presence, behavioral, physiological, system, and risk evaluation.
 
 ## Tech Stack
-- Frontend: React
-- Backend: FastAPI
-- Database: PostgreSQL
-- Visualization: Chart.js
-- AI Analysis: Future integration with LLMs
+- Frontend: React, future TypeScript/Tailwind/D3/Three.js modules
+- Backend: FastAPI, WebSockets
+- Data Layer: PostgreSQL schema with TimescaleDB/vector DB expansion points
+- Streaming Target: Kafka, Redis, Celery workers, Spark Streaming
+- AI Target: PyTorch, HuggingFace Transformers, LangChain/RAG, LLM insight generation
 
 ## Features
 - Metrics collection
@@ -19,6 +19,11 @@ physiological, and system metrics.
 - Dashboard scorecards and comparison tables
 - AI-style performance summaries
 - Telepresence scoring system
+- Real-time telemetry WebSocket stream
+- Embodiment prediction
+- Intelligent risk detection
+- Pearson correlation analytics
+- Research platform architecture endpoint
 
 ## CSV Format
 Use the sample in `data/sample_metrics.csv` or upload rows with these columns:
@@ -42,3 +47,12 @@ npm run dev
 ```
 
 Open the frontend at `http://127.0.0.1:5180`. In this workspace the frontend `.env.local` points to `http://127.0.0.1:8010` because port 8000 is already occupied.
+
+## Research Platform Endpoints
+- `GET /platform/architecture` returns the advanced platform pipeline.
+- `POST /telemetry` ingests multimodal sensor telemetry.
+- `GET /telemetry/latest` returns recent telemetry events.
+- `WS /ws/telemetry` streams simulated real-time telemetry for development.
+- `GET /analysis` returns averages, relationships, correlations, and risk counts.
+
+See `docs/advanced_platform.md` for the PhD/research-grade architecture.
