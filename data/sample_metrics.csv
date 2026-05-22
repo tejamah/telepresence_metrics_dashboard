@@ -1,0 +1,3 @@
+participant_id,task_type,setup,session_time,embodiment,ownership,agency,presence,task_efficiency,task_completion_time,error_rate,safety_events,workload,collaboration_quality,heart_rate,hrv,latency,fps,packet_loss,visual_match,haptic_delay
+P-101,Remote object assembly,VR headset + haptic glove,2026-05-22T11:00:00,86,61,91,80,84,88,5,1,59,82,92,56,96,76,1.8,58,132
+P-102,Remote inspection,AR display + robot arm,2026-05-22T11:35:00,68,72,70,73,71,145,12,2,78,69,108,43,74,60,1.1,76,64
