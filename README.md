@@ -1,10 +1,10 @@
 
-# Intelligent Multimodal Telepresence Analytics Platform
+# Embodied AI Research Operating Platform
 
 ## Overview
-This project is designed for Human-Robot Interaction (HRI), Telepresence, VR, and robotics research.
-It is evolving from a metrics dashboard into a real-time multimodal analytics platform for embodiment,
-presence, behavioral, physiological, system, and risk evaluation.
+This project is designed for Human-Robot Interaction (HRI), telepresence, VR/AR, robotics, and embodied AI research.
+It is evolving from a metrics dashboard into a real-time research operating platform for cognitive state estimation,
+embodiment intelligence, adaptive telepresence, AI-SBOM reliability, and publishable multimodal analytics.
 
 ## Tech Stack
 - Frontend: React, future TypeScript/Tailwind/D3/Three.js modules
@@ -21,6 +21,10 @@ presence, behavioral, physiological, system, and risk evaluation.
 - Telepresence scoring system
 - Real-time telemetry WebSocket stream
 - Embodiment prediction
+- Cognitive state engine
+- Predictive failure engine
+- Explainable AI factors
+- AI-SBOM reliability monitoring
 - Intelligent risk detection
 - Pearson correlation analytics
 - Research platform architecture endpoint
@@ -55,4 +59,4 @@ Open the frontend at `http://127.0.0.1:5180`. In this workspace the frontend `.e
 - `WS /ws/telemetry` streams simulated real-time telemetry for development.
 - `GET /analysis` returns averages, relationships, correlations, and risk counts.
 
-See `docs/advanced_platform.md` for the PhD/research-grade architecture.
+See `docs/advanced_platform.md` for the PhD/research-grade architecture and ultimate research vision.

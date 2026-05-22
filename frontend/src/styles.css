@@ -434,3 +434,334 @@ th {
     overflow-x: auto;
   }
 }
+
+body {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(38, 198, 218, 0.14), transparent 28%),
+    radial-gradient(circle at 80% 0%, rgba(255, 184, 77, 0.1), transparent 24%),
+    linear-gradient(135deg, #07090d 0%, #111017 48%, #07120f 100%);
+  color: #eef7f6;
+}
+
+.app-shell {
+  width: min(1400px, calc(100% - 36px));
+}
+
+.topbar,
+.insight-band,
+.summary-panel,
+.panel,
+.score-card {
+  border: 1px solid rgba(136, 227, 222, 0.18);
+  background: rgba(11, 16, 22, 0.78);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(18px);
+}
+
+.topbar {
+  position: relative;
+  overflow: hidden;
+}
+
+.topbar::after {
+  position: absolute;
+  right: 20px;
+  bottom: -1px;
+  left: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #5eead4, #ffb84d, transparent);
+  content: "";
+}
+
+.eyebrow,
+.score-card__heading span,
+.metric-row span,
+.panel-heading span,
+.live-metric span,
+.embodiment-graph span,
+.empty-state,
+th {
+  color: #8fb8b6;
+}
+
+h1 {
+  max-width: 820px;
+  color: #ffffff;
+  text-shadow: 0 0 28px rgba(94, 234, 212, 0.22);
+}
+
+h2,
+.score-card__heading strong,
+.metric-row strong,
+.live-metric strong {
+  color: #f7fffb;
+}
+
+.upload-button,
+button {
+  background: linear-gradient(135deg, #11b8a9, #8a6df1);
+  color: #04100f;
+}
+
+.notice {
+  border-color: rgba(255, 122, 89, 0.45);
+  background: rgba(64, 20, 18, 0.72);
+  color: #ffd8cf;
+}
+
+.loading {
+  border-color: rgba(136, 227, 222, 0.18);
+  background: rgba(11, 16, 22, 0.78);
+}
+
+.insight-band {
+  border-color: rgba(255, 184, 77, 0.28);
+}
+
+.insight-band span {
+  color: #ffcf74;
+}
+
+.insight-band p {
+  color: #d8efeb;
+}
+
+.summary-panel {
+  background:
+    linear-gradient(135deg, rgba(17, 184, 169, 0.22), transparent 42%),
+    linear-gradient(90deg, rgba(19, 25, 37, 0.92), rgba(18, 16, 26, 0.88));
+}
+
+.summary-panel p {
+  color: #b7d8d4;
+}
+
+.summary-panel .eyebrow {
+  color: #5eead4;
+}
+
+.quality-score {
+  min-width: 170px;
+  border: 1px solid rgba(94, 234, 212, 0.3);
+  background: rgba(3, 10, 12, 0.78);
+  color: #ffffff;
+}
+
+.quality-score span {
+  color: #5eead4;
+}
+
+.quality-score small {
+  color: #9dbfba;
+}
+
+.hero-visual {
+  grid-column: span 12;
+  display: grid;
+  grid-template-columns: minmax(360px, 0.9fr) 1.1fr;
+  gap: 16px;
+  min-height: 360px;
+}
+
+.orbital-map,
+.timeline-strip {
+  border: 1px solid rgba(136, 227, 222, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(94, 234, 212, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(94, 234, 212, 0.08) 1px, transparent 1px),
+    rgba(5, 10, 14, 0.8);
+  background-size: 34px 34px;
+  box-shadow: inset 0 0 80px rgba(94, 234, 212, 0.08);
+}
+
+.orbital-map {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+}
+
+.orbital-map::before,
+.orbital-map::after {
+  position: absolute;
+  inset: 46px;
+  border: 1px solid rgba(94, 234, 212, 0.2);
+  border-radius: 50%;
+  content: "";
+}
+
+.orbital-map::after {
+  inset: 92px;
+  border-color: rgba(255, 184, 77, 0.18);
+}
+
+.graph-node {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 108px;
+  height: 72px;
+  place-items: center;
+  border: 1px solid rgba(94, 234, 212, 0.25);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(94, 234, 212, 0.14), rgba(13, 18, 24, 0.92));
+  transform: rotate(var(--angle)) translate(130px) rotate(calc(-1 * var(--angle))) translate(-50%, -50%);
+}
+
+.graph-node::after {
+  width: var(--pulse);
+  height: 3px;
+  background: linear-gradient(90deg, #5eead4, #ffb84d);
+  content: "";
+}
+
+.graph-node strong {
+  color: #ffffff;
+}
+
+.graph-node span {
+  color: #9fd6d0;
+  font-size: 0.76rem;
+}
+
+.graph-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 154px;
+  height: 154px;
+  place-items: center;
+  border: 1px solid rgba(255, 184, 77, 0.42);
+  border-radius: 50%;
+  background: rgba(8, 13, 18, 0.9);
+  transform: translate(-50%, -50%);
+}
+
+.graph-core strong {
+  color: #ffcf74;
+  text-transform: uppercase;
+}
+
+.graph-core span {
+  color: #9fd6d0;
+  font-size: 0.78rem;
+}
+
+.timeline-strip {
+  display: grid;
+  align-content: center;
+  gap: 18px;
+  padding: 28px;
+}
+
+.timeline-strip span {
+  border-left: 2px solid #5eead4;
+  color: #d8efeb;
+  padding-left: 14px;
+}
+
+.bar-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bar-fill {
+  background: linear-gradient(90deg, #ff6b4a, #ffb84d);
+}
+
+.bar-fill.medium {
+  background: linear-gradient(90deg, #ffb84d, #b8e986);
+}
+
+.bar-fill.high {
+  background: linear-gradient(90deg, #11b8a9, #5eead4);
+}
+
+.live-metric {
+  border-color: rgba(136, 227, 222, 0.14);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.cognitive-panel,
+.forecast-panel {
+  grid-column: span 6;
+}
+
+.cognitive-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.forecast-callout {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(255, 184, 77, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 184, 77, 0.08);
+  padding: 14px;
+}
+
+.forecast-callout strong {
+  color: #ffcf74;
+  font-size: 1.25rem;
+  text-transform: capitalize;
+}
+
+.forecast-callout span {
+  color: #d8efeb;
+}
+
+.action-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.action-list span {
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  border-radius: 999px;
+  color: #c9f8f2;
+  padding: 6px 10px;
+}
+
+.metric-row,
+.relationship,
+th,
+td,
+.pipeline-step {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.relationship span,
+.pipeline-step strong {
+  background: rgba(255, 255, 255, 0.08);
+  color: #d8efeb;
+}
+
+.relationship span.observed {
+  background: rgba(94, 234, 212, 0.14);
+  color: #5eead4;
+}
+
+.relationship span.high {
+  background: rgba(255, 107, 74, 0.16);
+  color: #ff9b83;
+}
+
+.relationship span.medium {
+  background: rgba(255, 184, 77, 0.16);
+  color: #ffcf74;
+}
+
+@media (max-width: 920px) {
+  .hero-visual {
+    grid-template-columns: 1fr;
+  }
+
+  .cognitive-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -17,9 +17,12 @@ function App() {
   const latest = data?.latest || sessions.at(-1)
 
   const topInsight = useMemo(() => {
-    if (!sessions.length) return 'Upload experiment data to generate AI-style telepresence insights.'
+    if (telemetry?.failure_forecast?.prediction === 'teleoperation instability') {
+      return `AI copilot predicts teleoperation instability in ${telemetry.failure_forecast.time_to_event_seconds}s with ${Math.round(telemetry.failure_forecast.confidence * 100)}% confidence.`
+    }
+    if (!sessions.length) return 'Upload experiment data to activate the embodied AI research copilot.'
     return sessions.at(-1).insight
-  }, [sessions])
+  }, [sessions, telemetry])
 
   async function loadMetrics() {
     setLoading(true)
@@ -83,7 +86,7 @@ function App() {
       <header className="topbar">
         <div>
           <p className="eyebrow">HRI / VR evaluation framework</p>
-          <h1>Telepresence Metrics Dashboard</h1>
+          <h1>Embodied AI Research Operating Platform</h1>
         </div>
         <label className="upload-button">
           <input type="file" accept=".csv" onChange={handleUpload} disabled={uploading} />

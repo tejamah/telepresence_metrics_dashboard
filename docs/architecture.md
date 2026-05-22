@@ -9,12 +9,14 @@
 5. PostgreSQL tables in `database/schema.sql` describe the production persistence model.
 
 ## Advanced Flow
-1. ROS2, Unity, Unreal, OpenXR, and Meta Quest adapters publish synchronized device telemetry.
-2. Kafka topics separate EEG, HRV, eye tracking, hand tracking, robot telemetry, network metrics, and WebRTC quality signals.
-3. A real-time processing layer computes windowed aggregates, missing-sensor alerts, jitter, latency, and alignment quality.
-4. AI models predict embodiment quality, cognitive overload, motion-sickness risk, and teleoperation failure.
-5. A risk engine flags unsafe control conditions, hallucinated robot state, sensor instability, and embodiment degradation.
-6. The dashboard renders live telemetry, dynamic embodiment graphs, replayable digital twin state, and paper-ready reports.
+1. Human operators interact through VR, AR, robot, WebXR, Unity, Unreal, OpenXR, or Meta Quest interfaces.
+2. A multimodal sensor fusion layer synchronizes EEG, HRV, gaze, hand tracking, motion traces, robot telemetry, network metrics, and WebRTC quality.
+3. A real-time cognitive state engine estimates overload, attention drift, stress escalation, and immersion collapse risk.
+4. An embodiment intelligence model tracks agency, ownership, presence, latency, stress, and performance as a dynamic relationship graph.
+5. A predictive failure engine forecasts teleoperation instability before unsafe breakdowns occur.
+6. An AI-SBOM reliability monitor links dependency instability to embodiment degradation and teleoperation failures.
+7. An adaptive telepresence loop tunes graphics quality, haptic intensity, compression, and robot responsiveness.
+8. The research copilot generates hypotheses, suggested experiments, explanations, and paper-ready findings.
 
 ## API
 - `GET /metrics` returns seeded or uploaded sessions, scores, insights, and aggregate relationships.

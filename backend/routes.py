@@ -25,6 +25,14 @@ METRIC_WEIGHTS = {
     "visualization": 0.06,
 }
 
+DEPENDENCY_CHAIN = [
+    {"component": "OpenXR runtime", "type": "interface", "reliability": 0.96},
+    {"component": "ROS2 bridge", "type": "robotics", "reliability": 0.91},
+    {"component": "WebRTC media channel", "type": "streaming", "reliability": 0.88},
+    {"component": "HRV sensor driver", "type": "physiology", "reliability": 0.9},
+    {"component": "Embodiment inference model", "type": "ai_model", "reliability": 0.93},
+]
+
 HIGHER_IS_BETTER = {
     "embodiment": True,
     "ownership": True,
@@ -215,6 +223,80 @@ def predict_embodiment_state(metrics: dict[str, float]) -> dict[str, Any]:
     }
 
 
+def explain_prediction(metrics: dict[str, float]) -> list[dict[str, Any]]:
+    factors = [
+        ("latency", metrics.get("latency", 0), 90, "latency increased beyond the embodiment comfort band"),
+        ("fps", metrics.get("fps", 90), 55, "frame rate dropped below stable visual feedback threshold"),
+        ("packet_loss", metrics.get("packet_loss", 0), 3, "packet loss may destabilize motor synchronization"),
+        ("heart_rate", metrics.get("heart_rate", 80), 105, "physiology suggests stress escalation"),
+        ("workload", metrics.get("workload", 50), 70, "workload indicates cognitive overload pressure"),
+        ("agency", metrics.get("agency", 100), 60, "agency perception is degrading"),
+    ]
+    explanations = []
+    for name, value, threshold, detail in factors:
+        active = value > threshold if name not in {"fps", "agency"} else value < threshold
+        if active:
+            impact = min(1, abs(value - threshold) / max(threshold, 1))
+            explanations.append({"factor": name, "value": value, "impact": round(impact, 2), "detail": detail})
+    return explanations
+
+
+def cognitive_state(metrics: dict[str, float]) -> dict[str, Any]:
+    latency_load = min(30, max(0, (metrics.get("latency", 40) - 50) * 0.18))
+    physiology_load = min(25, max(0, (metrics.get("heart_rate", 80) - 85) * 0.4))
+    workload_load = min(25, max(0, (metrics.get("workload", 45) - 45) * 0.45))
+    agency_buffer = min(20, max(0, (metrics.get("agency", 70) - 50) * 0.35))
+    stability = round(max(0, min(100, 86 - latency_load - physiology_load - workload_load + agency_buffer)), 1)
+    collapse_risk = round(max(0, min(100, 100 - stability + max(0, metrics.get("packet_loss", 0) - 2) * 4)), 1)
+    attention_drift = round(max(0, min(100, metrics.get("workload", 45) * 0.45 + max(0, metrics.get("fps", 90) - 90) * -0.1)), 1)
+    return {
+        "cognitive_stability": stability,
+        "immersion_collapse_risk": "high" if collapse_risk >= 70 else "medium" if collapse_risk >= 40 else "low",
+        "collapse_risk_score": collapse_risk,
+        "attention_drift": attention_drift,
+        "stress_escalation": "elevated" if physiology_load > 12 or workload_load > 14 else "nominal",
+    }
+
+
+def failure_forecast(metrics: dict[str, float]) -> dict[str, Any]:
+    risk_score = (
+        max(0, metrics.get("latency", 40) - 80) * 0.25
+        + metrics.get("packet_loss", 0) * 4
+        + max(0, metrics.get("workload", 50) - 60) * 0.45
+        + max(0, 65 - metrics.get("agency", 75)) * 0.6
+    )
+    confidence = round(max(0.35, min(0.94, risk_score / 100 + 0.42)), 2)
+    seconds = round(max(8, 55 - risk_score * 0.45))
+    return {
+        "prediction": "teleoperation instability" if risk_score >= 35 else "stable control envelope",
+        "time_to_event_seconds": seconds if risk_score >= 35 else None,
+        "confidence": confidence,
+        "adaptive_actions": [
+            "reduce render quality" if metrics.get("fps", 90) < 60 else "maintain render quality",
+            "increase compression" if metrics.get("latency", 0) > 100 else "maintain network profile",
+            "soften haptic intensity" if metrics.get("workload", 0) > 75 else "maintain haptic profile",
+        ],
+    }
+
+
+def ai_sbom_status(metrics: dict[str, float]) -> dict[str, Any]:
+    instability = min(0.22, metrics.get("packet_loss", 0) * 0.015 + max(0, metrics.get("latency", 50) - 100) * 0.0008)
+    components = [
+        {
+            **component,
+            "runtime_reliability": round(max(0, component["reliability"] - instability), 3),
+            "status": "degraded" if component["reliability"] - instability < 0.82 else "nominal",
+        }
+        for component in DEPENDENCY_CHAIN
+    ]
+    degraded = [component for component in components if component["status"] == "degraded"]
+    return {
+        "components": components,
+        "dependency_risk": "elevated" if degraded else "nominal",
+        "degraded_count": len(degraded),
+    }
+
+
 def _store_session(payload: ExperimentSession) -> StoredSession:
     session = StoredSession(
         id=len(SESSIONS) + 1,
@@ -301,6 +383,10 @@ def _session_response(session: StoredSession) -> dict[str, Any]:
         "insight": session.insight,
         "risk_events": detect_risks(session.metrics),
         "embodiment_prediction": predict_embodiment_state(session.metrics),
+        "cognitive_state": cognitive_state(session.metrics),
+        "prediction_explanation": explain_prediction(session.metrics),
+        "failure_forecast": failure_forecast(session.metrics),
+        "ai_sbom": ai_sbom_status(session.metrics),
     }
 
 
@@ -450,14 +536,15 @@ def analysis() -> dict[str, Any]:
 @router.get("/platform/architecture")
 def platform_architecture() -> dict[str, Any]:
     return {
-        "name": "Intelligent Multimodal Telepresence Analytics Platform",
+        "name": "Embodied AI Research Operating Platform",
         "pipeline": [
-            "VR/robot devices",
-            "sensor streaming layer",
-            "real-time processing engine",
-            "AI analytics engine",
-            "embodiment and presence scoring",
-            "research dashboard and reports",
+            "human operator",
+            "VR/AR/robot interface",
+            "multimodal sensor fusion layer",
+            "real-time cognitive state engine",
+            "embodiment intelligence model",
+            "adaptive telepresence system",
+            "research analytics and AI copilot",
         ],
         "stream_sources": [
             "EEG",
@@ -470,6 +557,16 @@ def platform_architecture() -> dict[str, Any]:
             "video/audio streams",
         ],
         "research_modules": [
+            "cognitive state engine",
+            "embodied AI relationship graph",
+            "spatial 3D research environment",
+            "autonomous AI research agent",
+            "digital human model",
+            "live research timeline",
+            "AI-SBOM reliability monitor",
+            "explainable AI layer",
+            "predictive failure engine",
+            "adaptive optimization loop",
             "dynamic embodiment graph",
             "risk detection",
             "digital twin replay",
@@ -487,6 +584,10 @@ def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
     payload["timestamp"] = payload["timestamp"] or datetime.utcnow().isoformat(timespec="milliseconds")
     payload["risk_events"] = detect_risks(payload["metrics"])
     payload["embodiment_prediction"] = predict_embodiment_state(payload["metrics"])
+    payload["cognitive_state"] = cognitive_state(payload["metrics"])
+    payload["prediction_explanation"] = explain_prediction(payload["metrics"])
+    payload["failure_forecast"] = failure_forecast(payload["metrics"])
+    payload["ai_sbom"] = ai_sbom_status(payload["metrics"])
     TELEMETRY_STREAM.append(payload)
     return payload
 
@@ -518,6 +619,10 @@ async def telemetry_socket(websocket: WebSocket) -> None:
                 "metrics": simulated,
                 "risk_events": detect_risks(simulated),
                 "embodiment_prediction": predict_embodiment_state(simulated),
+                "cognitive_state": cognitive_state(simulated),
+                "prediction_explanation": explain_prediction(simulated),
+                "failure_forecast": failure_forecast(simulated),
+                "ai_sbom": ai_sbom_status(simulated),
             }
             TELEMETRY_STREAM.append(event)
             await websocket.send_json(event)

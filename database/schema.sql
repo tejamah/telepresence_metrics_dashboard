@@ -114,3 +114,42 @@ CREATE TABLE model_predictions (
     confidence FLOAT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE cognitive_state_events (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    cognitive_stability FLOAT NOT NULL,
+    collapse_risk_score FLOAT NOT NULL,
+    attention_drift FLOAT,
+    stress_escalation VARCHAR(50),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE explainability_factors (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    prediction_id INT REFERENCES model_predictions(id),
+    factor_name VARCHAR(120) NOT NULL,
+    factor_value FLOAT,
+    impact FLOAT NOT NULL,
+    detail TEXT NOT NULL
+);
+
+CREATE TABLE ai_sbom_components (
+    id SERIAL PRIMARY KEY,
+    component_name VARCHAR(160) NOT NULL,
+    component_type VARCHAR(80) NOT NULL,
+    baseline_reliability FLOAT NOT NULL,
+    runtime_reliability FLOAT,
+    status VARCHAR(40),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE adaptive_actions (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    action_name VARCHAR(160) NOT NULL,
+    trigger_reason TEXT,
+    applied BOOLEAN DEFAULT FALSE,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

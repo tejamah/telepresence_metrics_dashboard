@@ -20,6 +20,15 @@ const rawMetrics = [
   ['packet_loss', 'Packet loss', '%'],
 ]
 
+const graphNodes = [
+  ['Agency', 'agency'],
+  ['Ownership', 'ownership'],
+  ['Presence', 'presence'],
+  ['Latency', 'latency'],
+  ['Stress', 'heart_rate'],
+  ['Performance', 'task_efficiency'],
+]
+
 function ScoreBar({ label, score, level }) {
   return (
     <article className="score-card">
@@ -69,19 +78,55 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry }) {
   const liveMetrics = telemetry?.metrics || latest.metrics
   const liveRisks = telemetry?.risk_events || latest.risk_events || []
   const livePrediction = telemetry?.embodiment_prediction || latest.embodiment_prediction
+  const cognitive = telemetry?.cognitive_state || latest.cognitive_state
+  const forecast = telemetry?.failure_forecast || latest.failure_forecast
+  const explanations = telemetry?.prediction_explanation || latest.prediction_explanation || []
+  const aiSbom = telemetry?.ai_sbom || latest.ai_sbom
 
   return (
     <div className="dashboard-grid">
       <section className="summary-panel">
         <div>
-          <p className="eyebrow">Latest session</p>
+          <p className="eyebrow">Mission control</p>
           <h2>{latest.participant_id}</h2>
           <p>{latest.task_type}</p>
           <p>{latest.setup}</p>
         </div>
         <div className="quality-score">
-          <span>{latest.scores.overall}</span>
-          <small>{latest.scores.overall_level} quality</small>
+          <span>{cognitive?.cognitive_stability ?? latest.scores.overall}</span>
+          <small>cognitive stability</small>
+        </div>
+      </section>
+
+      <section className="hero-visual">
+        <div className="orbital-map">
+          {graphNodes.map(([label, key], index) => {
+            const value = Math.min(100, Math.max(0, liveMetrics[key] ?? 50))
+            return (
+              <div
+                className="graph-node"
+                key={key}
+                style={{
+                  '--angle': `${index * 60}deg`,
+                  '--pulse': `${value}%`,
+                }}
+              >
+                <strong>{Math.round(value)}</strong>
+                <span>{label}</span>
+              </div>
+            )
+          })}
+          <div className="graph-core">
+            <strong>{livePrediction?.state || 'stable'}</strong>
+            <span>Embodiment graph</span>
+          </div>
+        </div>
+        <div className="timeline-strip">
+          <span>00:01 Stable embodiment</span>
+          <span>00:14 Agency drift monitored</span>
+          <span>00:22 Physiological response sampled</span>
+          <span>00:30 Network jitter correlated</span>
+          <span>00:36 Failure forecast updated</span>
         </div>
       </section>
 
@@ -122,6 +167,39 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry }) {
         </div>
       </section>
 
+      <section className="panel cognitive-panel">
+        <div className="panel-heading">
+          <h2>Cognitive State Engine</h2>
+          <span>{cognitive?.immersion_collapse_risk} collapse risk</span>
+        </div>
+        <div className="cognitive-grid">
+          <LiveMetric label="Stability" value={cognitive?.cognitive_stability} unit="%" />
+          <LiveMetric label="Collapse risk" value={cognitive?.collapse_risk_score} unit="%" />
+          <LiveMetric label="Attention drift" value={cognitive?.attention_drift} unit="%" />
+          <LiveMetric label="Stress" value={cognitive?.stress_escalation} unit="" />
+        </div>
+      </section>
+
+      <section className="panel forecast-panel">
+        <div className="panel-heading">
+          <h2>Predictive Failure Engine</h2>
+          <span>{Math.round((forecast?.confidence || 0) * 100)}% confidence</span>
+        </div>
+        <div className="forecast-callout">
+          <strong>{forecast?.prediction}</strong>
+          <span>
+            {forecast?.time_to_event_seconds
+              ? `Predicted in ${forecast.time_to_event_seconds} seconds`
+              : 'Control envelope remains stable'}
+          </span>
+        </div>
+        <div className="action-list">
+          {forecast?.adaptive_actions?.map((action) => (
+            <span key={action}>{action}</span>
+          ))}
+        </div>
+      </section>
+
       <section className="panel risk-panel">
         <div className="panel-heading">
           <h2>Intelligent Risk Detection</h2>
@@ -138,6 +216,36 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry }) {
           ) : (
             <div className="empty-state">No active risk signals in the current stream.</div>
           )}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-heading">
+          <h2>Explainable AI Layer</h2>
+          <span>{explanations.length} active factors</span>
+        </div>
+        <div className="metric-list">
+          {explanations.length ? explanations.map((item) => (
+            <div className="metric-row" key={item.factor}>
+              <span>{item.factor}: {item.detail}</span>
+              <strong>{Math.round(item.impact * 100)}%</strong>
+            </div>
+          )) : <div className="empty-state">Prediction model is not flagging dominant degradation factors.</div>}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-heading">
+          <h2>AI-SBOM Reliability</h2>
+          <span>{aiSbom?.dependency_risk}</span>
+        </div>
+        <div className="metric-list">
+          {aiSbom?.components?.map((component) => (
+            <div className="metric-row" key={component.component}>
+              <span>{component.component}</span>
+              <strong>{Math.round(component.runtime_reliability * 100)}%</strong>
+            </div>
+          ))}
         </div>
       </section>
 
