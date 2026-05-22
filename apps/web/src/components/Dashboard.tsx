@@ -152,6 +152,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
   const realitySync = telemetry?.reality_sync || latest.reality_sync
   const scientist = telemetry?.autonomous_scientist || latest.autonomous_scientist
   const presence = telemetry?.post_screen_experience || latest.post_screen_experience
+  const simulatorState = telemetry?.simulator_state
   const signalHistory = telemetryHistory.length ? telemetryHistory : telemetry ? [telemetry] : []
   const latencySeries = signalHistory.map((event) => event.metrics.latency ?? 0)
   const cognitiveSeries = signalHistory.map((event) => event.cognitive_state.cognitive_stability)
@@ -211,6 +212,47 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
           <SignalStrip label="Cognitive stability" values={cognitiveSeries} unit="%" />
           <SignalStrip label="Embodiment prediction" values={embodimentSeries} unit="%" />
           <SignalStrip label="Risk energy" values={riskSeries} unit="%" />
+        </div>
+      </section>
+
+      <section className="panel simulator-panel">
+        <div className="panel-heading">
+          <h2>Real Telemetry Simulator</h2>
+          <span>{simulatorState?.phase?.replaceAll('_', ' ') || 'warming up'}</span>
+        </div>
+        <div className="simulator-phase">
+          <div
+            className="simulator-phase__fill"
+            style={{
+              width: `${simulatorState ? Math.min(100, (simulatorState.phase_tick / simulatorState.cycle_length) * 100) : 0}%`,
+            }}
+          />
+        </div>
+        <div className="simulator-grid">
+          <div>
+            <strong>Physiology</strong>
+            <LiveMetric label="HR" value={simulatorState?.physiological?.heart_rate} unit="bpm" />
+            <LiveMetric label="HRV" value={simulatorState?.physiological?.hrv} unit="ms" />
+            <LiveMetric label="Stress" value={simulatorState?.physiological?.stress_index} unit="%" />
+          </div>
+          <div>
+            <strong>Network</strong>
+            <LiveMetric label="Latency" value={simulatorState?.network?.latency} unit="ms" />
+            <LiveMetric label="Jitter" value={simulatorState?.network?.jitter} unit="ms" />
+            <LiveMetric label="Loss" value={simulatorState?.network?.packet_loss} unit="%" />
+          </div>
+          <div>
+            <strong>Embodiment</strong>
+            <LiveMetric label="Agency" value={simulatorState?.embodiment?.agency} unit="%" />
+            <LiveMetric label="Ownership" value={simulatorState?.embodiment?.ownership} unit="%" />
+            <LiveMetric label="Degrade" value={simulatorState?.embodiment?.degradation} unit="%" />
+          </div>
+          <div>
+            <strong>Stress Escalation</strong>
+            <LiveMetric label="Workload" value={simulatorState?.stress?.workload} unit="%" />
+            <LiveMetric label="Errors" value={simulatorState?.stress?.error_rate} unit="%" />
+            <LiveMetric label="Timing" value={simulatorState?.stress?.interaction_timing_variance} unit="ms" />
+          </div>
         </div>
       </section>
 

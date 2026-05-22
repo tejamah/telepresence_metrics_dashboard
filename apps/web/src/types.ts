@@ -196,6 +196,25 @@ export interface PlatformArchitecture {
   pipeline: string[]
   stream_sources: string[]
   research_modules: string[]
+  simulator?: SimulatorProfile
+}
+
+export interface SimulatorProfile {
+  name: string
+  cycle_seconds: number
+  phases: string[]
+  simulators: Record<string, string[]>
+}
+
+export interface SimulatorState {
+  phase: string
+  phase_tick: number
+  cycle_length: number
+  physiological: Record<string, number>
+  network: Record<string, number>
+  embodiment: Record<string, number>
+  stress: Record<string, number>
+  generators: string[]
 }
 
 export interface TelemetryEvent {
@@ -216,4 +235,5 @@ export interface TelemetryEvent {
   reality_sync: RealitySyncState
   autonomous_scientist: AutonomousScientist
   post_screen_experience: PostScreenExperience
+  simulator_state?: SimulatorState
 }

@@ -19,7 +19,8 @@ and publishable multimodal analytics.
 - Dashboard scorecards and comparison tables
 - AI-style performance summaries
 - Telepresence scoring system
-- Real-time telemetry WebSocket stream
+- Real telemetry simulator for hardware-free live demos
+- Real-time telemetry WebSocket stream with simulator state
 - Embodiment prediction
 - Cognitive state engine
 - Embodied AI consciousness layer
@@ -96,6 +97,9 @@ packages/
 - `POST /telemetry` ingests multimodal sensor telemetry.
 - `GET /telemetry/latest` returns recent telemetry events.
 - `WS /ws/telemetry` streams simulated real-time telemetry for development.
+- `GET /simulation/telemetry-profile` returns simulator phases and signal generators.
+- `GET /simulation/telemetry-preview` returns a short generated telemetry sequence.
 - `GET /analysis` returns averages, relationships, correlations, and risk counts.
 
 See `docs/advanced_platform.md` for the PhD/research-grade architecture and ultimate research vision.
+See `docs/TELEMETRY_SIMULATOR.md` for the physiological, network, embodiment degradation, and stress escalation simulator.

@@ -5,12 +5,20 @@ import csv
 import io
 import math
 import statistics
+import sys
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
+
+from services.telemetry import TelemetrySimulator
 
 router = APIRouter()
 
@@ -84,6 +92,7 @@ class StoredSession:
 
 SESSIONS: list[StoredSession] = []
 TELEMETRY_STREAM: list[dict[str, Any]] = []
+SIMULATOR = TelemetrySimulator()
 
 
 def _numeric(value: Any) -> float | None:
@@ -799,6 +808,7 @@ def platform_architecture() -> dict[str, Any]:
             "research analytics and AI copilot",
         ],
         "stream_sources": [
+            "telemetry simulator",
             "EEG",
             "HRV",
             "eye tracking",
@@ -840,6 +850,7 @@ def platform_architecture() -> dict[str, Any]:
             "AI research assistant",
             "dataset builder",
         ],
+        "simulator": SIMULATOR.profile(),
     }
 
 
@@ -881,6 +892,30 @@ def simulation_catalog() -> dict[str, Any]:
     return {"scenarios": simulation_scenarios()}
 
 
+@router.get("/simulation/telemetry-profile")
+def telemetry_simulator_profile() -> dict[str, Any]:
+    return SIMULATOR.profile()
+
+
+@router.get("/simulation/telemetry-preview")
+def telemetry_simulator_preview() -> dict[str, Any]:
+    _seed()
+    frames = []
+    for tick in range(16):
+        session = SESSIONS[tick % len(SESSIONS)]
+        metrics, simulator_state = SIMULATOR.simulate(session.metrics, tick)
+        frames.append(
+            {
+                "tick": tick,
+                "participant_id": session.participant_id,
+                "phase": simulator_state["phase"],
+                "metrics": metrics,
+                "simulator_state": simulator_state,
+            }
+        )
+    return {"profile": SIMULATOR.profile(), "frames": frames}
+
+
 @router.get("/presence/post-screen")
 def post_screen_presence() -> dict[str, Any]:
     _seed()
@@ -895,25 +930,14 @@ async def telemetry_socket(websocket: WebSocket) -> None:
     tick = 0
     try:
         while True:
-            base = SESSIONS[tick % len(SESSIONS)].metrics
-            instability_wave = max(0, math.sin(tick / 5))
-            recovery_wave = max(0, math.cos(tick / 6))
-            simulated = {
-                **base,
-                "latency": round(base.get("latency", 80) + math.sin(tick / 3) * 18 + instability_wave * 42, 2),
-                "packet_loss": round(max(0, base.get("packet_loss", 1) + math.cos(tick / 4) * 0.7 + instability_wave * 3.8), 2),
-                "heart_rate": round(base.get("heart_rate", 90) + math.sin(tick / 2) * 5 + instability_wave * 10, 2),
-                "workload": round(max(0, min(100, base.get("workload", 55) + instability_wave * 16 - recovery_wave * 4)), 2),
-                "fps": round(max(24, min(100, base.get("fps", 72) - instability_wave * 18 + recovery_wave * 4)), 2),
-                "ownership": round(max(0, min(100, base.get("ownership", 65) - instability_wave * 10)), 2),
-                "agency": round(max(0, min(100, base.get("agency", 70) - instability_wave * 14 + recovery_wave * 3)), 2),
-                "safety_events": round(max(0, base.get("safety_events", 0) + (1 if instability_wave > 0.92 else 0)), 2),
-            }
+            session = SESSIONS[tick % len(SESSIONS)]
+            simulated, simulator_state = SIMULATOR.simulate(session.metrics, tick)
             event = {
                 "timestamp": datetime.utcnow().isoformat(timespec="milliseconds"),
-                "participant_id": SESSIONS[tick % len(SESSIONS)].participant_id,
-                "source": "websocket_simulator",
+                "participant_id": session.participant_id,
+                "source": "real_telemetry_simulator",
                 "metrics": simulated,
+                "simulator_state": simulator_state,
                 "risk_events": detect_risks(simulated),
                 "embodiment_prediction": predict_embodiment_state(simulated),
                 "cognitive_state": cognitive_state(simulated),
@@ -921,12 +945,12 @@ async def telemetry_socket(websocket: WebSocket) -> None:
                 "failure_forecast": failure_forecast(simulated),
                 "ai_sbom": ai_sbom_status(simulated),
                 "embodied_consciousness": embodied_consciousness(simulated),
-                "human_digital_twin": human_digital_twin(SESSIONS[tick % len(SESSIONS)].participant_id, simulated),
+                "human_digital_twin": human_digital_twin(session.participant_id, simulated),
                 "embodied_memory_graph": embodied_memory_graph(simulated),
                 "tlm_interpretation": telepresence_language_model(simulated),
                 "reality_sync": reality_sync_state(simulated),
                 "autonomous_scientist": autonomous_scientist(simulated),
-                "post_screen_experience": post_screen_experience(simulated, SESSIONS[tick % len(SESSIONS)].participant_id),
+                "post_screen_experience": post_screen_experience(simulated, session.participant_id),
             }
             TELEMETRY_STREAM.append(event)
             await websocket.send_json(event)

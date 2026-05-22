@@ -751,6 +751,49 @@ button {
   grid-column: span 12;
 }
 
+.simulator-panel {
+  grid-column: span 12;
+  border-color: rgba(94, 234, 212, 0.34);
+  background:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.12), rgba(255, 184, 77, 0.06)),
+    rgba(11, 16, 22, 0.78);
+}
+
+.simulator-phase {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: 14px;
+}
+
+.simulator-phase__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5eead4, #ffb84d, #8a6df1);
+  transition: width 260ms ease;
+}
+
+.simulator-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.simulator-grid > div {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(136, 227, 222, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 12px;
+}
+
+.simulator-grid > div > strong {
+  color: #ffcf74;
+  font-size: 0.9rem;
+}
+
 .stream-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -901,10 +944,15 @@ td,
   .stream-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .simulator-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 640px) {
-  .stream-grid {
+  .stream-grid,
+  .simulator-grid {
     grid-template-columns: 1fr;
   }
 }
