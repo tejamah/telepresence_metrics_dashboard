@@ -4,8 +4,8 @@
 
 ```text
 Browser
-  -> React TypeScript app
-  -> FastAPI REST + WebSocket API
+  -> apps/web React TypeScript app
+  -> apps/api FastAPI REST + WebSocket API
   -> in-memory session store
   -> PostgreSQL schema ready
 ```

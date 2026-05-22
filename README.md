@@ -50,19 +50,19 @@ participant_id,task_type,setup,session_time,embodiment,ownership,agency,presence
 
 ## Run Backend
 ```bash
-cd backend
+cd apps/api
 pip install -r requirements.txt
 uvicorn main:app --reload --host 127.0.0.1 --port 8010
 ```
 
 ## Run Frontend
 ```bash
-cd frontend
+cd apps/web
 npm install
 npm run dev
 ```
 
-Open the frontend at `http://127.0.0.1:5180`. In this workspace the frontend `.env.local` points to `http://127.0.0.1:8010` because port 8000 is already occupied.
+Open the web app at `http://127.0.0.1:5180`. The web app defaults to `http://127.0.0.1:8010` for the API.
 
 ## V1 Execution Docs
 - `docs/V1_EXECUTION_PLAN.md`
@@ -74,9 +74,9 @@ Open the frontend at `http://127.0.0.1:5180`. In this workspace the frontend `.e
 ## Target Architecture
 ```text
 apps/
-  web/
-  api/
-  ai-engine/
+  web/        React + TypeScript experience layer
+  api/        FastAPI REST/WebSocket platform API
+  ai-engine/  model training, evaluation, and future inference
 
 services/
   telemetry/

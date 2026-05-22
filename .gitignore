@@ -1,6 +1,6 @@
-backend/__pycache__/
-backend/*.log
-frontend/dist/
-frontend/node_modules/
-frontend/*.log
-frontend/.env.local
+apps/api/__pycache__/
+apps/api/*.log
+apps/web/dist/
+apps/web/node_modules/
+apps/web/*.log
+apps/web/.env.local

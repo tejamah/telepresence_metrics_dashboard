@@ -9,4 +9,4 @@ packages/
   analytics/  scoring, correlations, normalization, replay helpers
 ```
 
-The frontend now has typed contracts in `frontend/src/types.ts`; those should move into `packages/types` when the monorepo migration begins.
+The web app currently has typed contracts in `apps/web/src/types.ts`; those should move into `packages/types` when shared SDK work begins.

@@ -53,9 +53,9 @@ Build only:
 
 ```text
 apps/
-  web/
-  api/
-  ai-engine/
+  web/        React + TypeScript experience layer
+  api/        FastAPI platform API
+  ai-engine/  model training, evaluation, and inference
 
 services/
   telemetry/

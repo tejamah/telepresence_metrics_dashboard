@@ -11,4 +11,4 @@ Initial component families:
 - Risk badges.
 - Replay controls.
 
-Current UI is still in `frontend/src`; move repeated components here when the web app is migrated into `apps/web`.
+Current UI is in `apps/web/src`; move repeated components here when a shared design system is needed.

@@ -1,6 +1,6 @@
 # Shared Types
 
-Move `frontend/src/types.ts` here when the monorepo migration begins.
+Move `apps/web/src/types.ts` here when shared SDK work begins.
 
 Planned contracts:
 - Session.
