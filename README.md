@@ -8,7 +8,7 @@ persistent digital identity, cognitive augmentation, emotionally intelligent AI 
 and publishable multimodal analytics.
 
 ## Tech Stack
-- Frontend: React, future TypeScript/Tailwind/D3/Three.js modules
+- Frontend: React + TypeScript, Tailwind-ready design system, future Framer Motion/Recharts/Three.js modules
 - Backend: FastAPI, WebSockets
 - Data Layer: PostgreSQL schema with TimescaleDB/vector DB expansion points
 - Streaming Target: Kafka, Redis, Celery workers, Spark Streaming
@@ -64,6 +64,33 @@ npm run dev
 ```
 
 Open the frontend at `http://127.0.0.1:5180`. In this workspace the frontend `.env.local` points to `http://127.0.0.1:8010` because port 8000 is already occupied.
+
+## V1 Execution Docs
+- `docs/V1_EXECUTION_PLAN.md`
+- `docs/AI_PIPELINE.md`
+- `docs/DATA_STRATEGY.md`
+- `docs/DEPLOYMENT_ARCHITECTURE.md`
+- `docs/RESEARCH_ROADMAP.md`
+
+## Target Architecture
+```text
+apps/
+  web/
+  api/
+  ai-engine/
+
+services/
+  telemetry/
+  cognition/
+  embodiment/
+  synchronization/
+  ai-copilot/
+
+packages/
+  ui/
+  types/
+  analytics/
+```
 
 ## Research Platform Endpoints
 - `GET /platform/architecture` returns the advanced platform pipeline.

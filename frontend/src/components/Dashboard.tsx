@@ -1,6 +1,12 @@
-import React from 'react'
+import type { CSSProperties } from 'react'
+import type {
+  AnalyticsPayload,
+  ExperimentSession,
+  PlatformArchitecture,
+  TelemetryEvent,
+} from '../types'
 
-const metricLabels = {
+const metricLabels: Record<string, string> = {
   embodiment: 'Embodiment',
   presence: 'Presence',
   performance: 'Performance',
@@ -29,7 +35,13 @@ const graphNodes = [
   ['Performance', 'task_efficiency'],
 ]
 
-function ScoreBar({ label, score, level }) {
+interface ScoreBarProps {
+  label: string
+  score: number
+  level: string
+}
+
+function ScoreBar({ label, score, level }: ScoreBarProps) {
   return (
     <article className="score-card">
       <div className="score-card__heading">
@@ -44,7 +56,7 @@ function ScoreBar({ label, score, level }) {
   )
 }
 
-function TrendRow({ session }) {
+function TrendRow({ session }: { session: ExperimentSession }) {
   const score = session.scores.overall
   return (
     <tr>
@@ -57,7 +69,7 @@ function TrendRow({ session }) {
   )
 }
 
-function LiveMetric({ label, value, unit }) {
+function LiveMetric({ label, value, unit }: { label: string; value?: number | string | null; unit: string }) {
   return (
     <div className="live-metric">
       <span>{label}</span>
@@ -69,7 +81,15 @@ function LiveMetric({ label, value, unit }) {
   )
 }
 
-function Dashboard({ latest, sessions, analytics, architecture, telemetry }) {
+interface DashboardProps {
+  latest: ExperimentSession
+  sessions: ExperimentSession[]
+  analytics?: AnalyticsPayload
+  architecture: PlatformArchitecture | null
+  telemetry: TelemetryEvent | null
+}
+
+function Dashboard({ latest, sessions, analytics, architecture, telemetry }: DashboardProps) {
   if (!latest) {
     return <div className="loading">No sessions available yet.</div>
   }
@@ -116,7 +136,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry }) {
                 style={{
                   '--angle': `${index * 60}deg`,
                   '--pulse': `${value}%`,
-                }}
+                } as CSSProperties}
               >
                 <strong>{Math.round(value)}</strong>
                 <span>{label}</span>

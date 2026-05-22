@@ -1,14 +1,15 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Dashboard from './components/Dashboard'
+import type { MetricsPayload, PlatformArchitecture, TelemetryEvent } from './types'
 import './styles.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8010'
 const WS_URL = API_URL.replace('http', 'ws')
 
 function App() {
-  const [data, setData] = useState(null)
-  const [architecture, setArchitecture] = useState(null)
-  const [telemetry, setTelemetry] = useState(null)
+  const [data, setData] = useState<MetricsPayload | null>(null)
+  const [architecture, setArchitecture] = useState<PlatformArchitecture | null>(null)
+  const [telemetry, setTelemetry] = useState<TelemetryEvent | null>(null)
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
@@ -21,7 +22,7 @@ function App() {
       return `AI copilot predicts teleoperation instability in ${telemetry.failure_forecast.time_to_event_seconds}s with ${Math.round(telemetry.failure_forecast.confidence * 100)}% confidence.`
     }
     if (!sessions.length) return 'Upload experiment data to activate the embodied AI research copilot.'
-    return sessions.at(-1).insight
+    return sessions.at(-1)?.insight || 'Awaiting embodied presence data.'
   }, [sessions, telemetry])
 
   async function loadMetrics() {
@@ -34,13 +35,13 @@ function App() {
       const architectureResponse = await fetch(`${API_URL}/platform/architecture`)
       if (architectureResponse.ok) setArchitecture(await architectureResponse.json())
     } catch (event) {
-      setError(event.message)
+      setError(event instanceof Error ? event.message : 'Unable to load platform data.')
     } finally {
       setLoading(false)
     }
   }
 
-  async function handleUpload(event) {
+  async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     if (!file) return
 
@@ -59,7 +60,7 @@ function App() {
       }
       await loadMetrics()
     } catch (event) {
-      setError(event.message)
+      setError(event instanceof Error ? event.message : 'CSV upload failed.')
     } finally {
       setUploading(false)
       event.target.value = ''
@@ -107,8 +108,8 @@ function App() {
       </section>
 
       {loading ? (
-        <div className="loading">Loading telepresence metrics...</div>
-      ) : (
+        <div className="loading">Loading embodied presence infrastructure...</div>
+      ) : latest ? (
         <Dashboard
           latest={latest}
           sessions={sessions}
@@ -116,6 +117,8 @@ function App() {
           architecture={architecture}
           telemetry={telemetry}
         />
+      ) : (
+        <div className="loading">No sessions available yet.</div>
       )}
     </main>
   )
