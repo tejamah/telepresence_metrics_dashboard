@@ -10,6 +10,8 @@ function App() {
   const [data, setData] = useState<MetricsPayload | null>(null)
   const [architecture, setArchitecture] = useState<PlatformArchitecture | null>(null)
   const [telemetry, setTelemetry] = useState<TelemetryEvent | null>(null)
+  const [telemetryHistory, setTelemetryHistory] = useState<TelemetryEvent[]>([])
+  const [streamState, setStreamState] = useState<'connecting' | 'live' | 'offline'>('connecting')
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
@@ -73,11 +75,21 @@ function App() {
 
   useEffect(() => {
     const socket = new WebSocket(`${WS_URL}/ws/telemetry`)
+    socket.onopen = () => {
+      setStreamState('live')
+      setError('')
+    }
     socket.onmessage = (event) => {
-      setTelemetry(JSON.parse(event.data))
+      const nextTelemetry = JSON.parse(event.data) as TelemetryEvent
+      setTelemetry(nextTelemetry)
+      setTelemetryHistory((history) => [...history.slice(-39), nextTelemetry])
     }
     socket.onerror = () => {
+      setStreamState('offline')
       setError('Live telemetry stream is unavailable. The dashboard is showing stored session data.')
+    }
+    socket.onclose = () => {
+      setStreamState((current) => (current === 'live' ? 'offline' : current))
     }
     return () => socket.close()
   }, [])
@@ -116,6 +128,8 @@ function App() {
           analytics={data?.analytics}
           architecture={architecture}
           telemetry={telemetry}
+          telemetryHistory={telemetryHistory}
+          streamState={streamState}
         />
       ) : (
         <div className="loading">No sessions available yet.</div>

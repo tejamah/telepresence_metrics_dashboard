@@ -896,12 +896,18 @@ async def telemetry_socket(websocket: WebSocket) -> None:
     try:
         while True:
             base = SESSIONS[tick % len(SESSIONS)].metrics
+            instability_wave = max(0, math.sin(tick / 5))
+            recovery_wave = max(0, math.cos(tick / 6))
             simulated = {
                 **base,
-                "latency": round(base.get("latency", 80) + math.sin(tick / 3) * 18, 2),
-                "packet_loss": round(max(0, base.get("packet_loss", 1) + math.cos(tick / 4) * 0.7), 2),
-                "heart_rate": round(base.get("heart_rate", 90) + math.sin(tick / 2) * 5, 2),
-                "agency": round(max(0, min(100, base.get("agency", 70) - max(0, math.sin(tick / 3) * 8))), 2),
+                "latency": round(base.get("latency", 80) + math.sin(tick / 3) * 18 + instability_wave * 42, 2),
+                "packet_loss": round(max(0, base.get("packet_loss", 1) + math.cos(tick / 4) * 0.7 + instability_wave * 3.8), 2),
+                "heart_rate": round(base.get("heart_rate", 90) + math.sin(tick / 2) * 5 + instability_wave * 10, 2),
+                "workload": round(max(0, min(100, base.get("workload", 55) + instability_wave * 16 - recovery_wave * 4)), 2),
+                "fps": round(max(24, min(100, base.get("fps", 72) - instability_wave * 18 + recovery_wave * 4)), 2),
+                "ownership": round(max(0, min(100, base.get("ownership", 65) - instability_wave * 10)), 2),
+                "agency": round(max(0, min(100, base.get("agency", 70) - instability_wave * 14 + recovery_wave * 3)), 2),
+                "safety_events": round(max(0, base.get("safety_events", 0) + (1 if instability_wave > 0.92 else 0)), 2),
             }
             event = {
                 "timestamp": datetime.utcnow().isoformat(timespec="milliseconds"),

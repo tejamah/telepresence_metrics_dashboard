@@ -87,9 +87,52 @@ interface DashboardProps {
   analytics?: AnalyticsPayload
   architecture: PlatformArchitecture | null
   telemetry: TelemetryEvent | null
+  telemetryHistory: TelemetryEvent[]
+  streamState: 'connecting' | 'live' | 'offline'
 }
 
-function Dashboard({ latest, sessions, analytics, architecture, telemetry }: DashboardProps) {
+function SignalStrip({ label, values, unit }: { label: string; values: number[]; unit: string }) {
+  const latestValue = values.at(-1)
+  const maxValue = Math.max(...values, 1)
+
+  return (
+    <div className="signal-strip">
+      <div className="signal-strip__heading">
+        <span>{label}</span>
+        <strong>{latestValue !== undefined ? `${Math.round(latestValue)}${unit}` : 'waiting'}</strong>
+      </div>
+      <div className="signal-bars">
+        {values.slice(-30).map((value, index) => (
+          <i
+            key={`${label}-${index}-${value}`}
+            style={{ height: `${Math.max(8, (value / maxValue) * 100)}%` }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function LiveTimeline({ history }: { history: TelemetryEvent[] }) {
+  const events = history.slice(-6).reverse()
+
+  return (
+    <div className="live-timeline">
+      {events.length ? events.map((event, index) => {
+        const latency = Math.round(event.metrics.latency ?? 0)
+        const stability = Math.round(event.cognitive_state.cognitive_stability)
+        const risk = event.risk_events[0]?.type || event.embodiment_prediction.state
+        return (
+          <span key={`${event.timestamp}-${index}`}>
+            {new Date(event.timestamp).toLocaleTimeString()} / {latency}ms / stability {stability}% / {risk}
+          </span>
+        )
+      }) : <span>Awaiting live telemetry frames</span>}
+    </div>
+  )
+}
+
+function Dashboard({ latest, sessions, analytics, architecture, telemetry, telemetryHistory, streamState }: DashboardProps) {
   if (!latest) {
     return <div className="loading">No sessions available yet.</div>
   }
@@ -109,12 +152,17 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry }: Das
   const realitySync = telemetry?.reality_sync || latest.reality_sync
   const scientist = telemetry?.autonomous_scientist || latest.autonomous_scientist
   const presence = telemetry?.post_screen_experience || latest.post_screen_experience
+  const signalHistory = telemetryHistory.length ? telemetryHistory : telemetry ? [telemetry] : []
+  const latencySeries = signalHistory.map((event) => event.metrics.latency ?? 0)
+  const cognitiveSeries = signalHistory.map((event) => event.cognitive_state.cognitive_stability)
+  const embodimentSeries = signalHistory.map((event) => event.embodiment_prediction.predicted_embodiment_quality)
+  const riskSeries = signalHistory.map((event) => event.risk_events.length * 25 + event.cognitive_state.collapse_risk_score)
 
   return (
     <div className="dashboard-grid">
       <section className="summary-panel">
         <div>
-          <p className="eyebrow">Mission control</p>
+          <p className="eyebrow">Mission control / <span className={`stream-dot ${streamState}`}>{streamState}</span></p>
           <h2>{latest.participant_id}</h2>
           <p>{latest.task_type}</p>
           <p>{latest.setup}</p>
@@ -149,11 +197,20 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry }: Das
           </div>
         </div>
         <div className="timeline-strip">
-          <span>00:01 Stable embodiment</span>
-          <span>00:14 Agency drift monitored</span>
-          <span>00:22 Physiological response sampled</span>
-          <span>00:30 Network jitter correlated</span>
-          <span>00:36 Failure forecast updated</span>
+          <LiveTimeline history={signalHistory} />
+        </div>
+      </section>
+
+      <section className="panel stream-wall">
+        <div className="panel-heading">
+          <h2>Live Cognitive Streams</h2>
+          <span>{signalHistory.length} frames buffered</span>
+        </div>
+        <div className="stream-grid">
+          <SignalStrip label="Latency" values={latencySeries} unit="ms" />
+          <SignalStrip label="Cognitive stability" values={cognitiveSeries} unit="%" />
+          <SignalStrip label="Embodiment prediction" values={embodimentSeries} unit="%" />
+          <SignalStrip label="Risk energy" values={riskSeries} unit="%" />
         </div>
       </section>
 

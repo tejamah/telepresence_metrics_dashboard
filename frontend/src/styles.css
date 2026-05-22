@@ -656,10 +656,46 @@ button {
   padding: 28px;
 }
 
-.timeline-strip span {
+.timeline-strip span,
+.live-timeline span {
   border-left: 2px solid #5eead4;
   color: #d8efeb;
   padding-left: 14px;
+}
+
+.live-timeline {
+  display: grid;
+  gap: 14px;
+}
+
+.stream-dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  color: #ffcf74;
+}
+
+.stream-dot::before {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: #ffcf74;
+  box-shadow: 0 0 16px currentColor;
+  content: "";
+}
+
+.stream-dot.live {
+  color: #5eead4;
+}
+
+.stream-dot.live::before {
+  animation: streamPulse 1.2s ease-in-out infinite;
+}
+
+.stream-dot.offline {
+  color: #ff9b83;
 }
 
 .bar-track {
@@ -681,6 +717,13 @@ button {
 .live-metric {
   border-color: rgba(136, 227, 222, 0.14);
   background: rgba(255, 255, 255, 0.035);
+  transition: border-color 180ms ease, transform 180ms ease, background 180ms ease;
+}
+
+.live-metric:hover {
+  border-color: rgba(94, 234, 212, 0.42);
+  background: rgba(94, 234, 212, 0.075);
+  transform: translateY(-1px);
 }
 
 .cognitive-panel,
@@ -702,6 +745,58 @@ button {
 
 .companion-panel {
   border-color: rgba(255, 184, 77, 0.28);
+}
+
+.stream-wall {
+  grid-column: span 12;
+}
+
+.stream-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.signal-strip {
+  display: grid;
+  gap: 12px;
+  min-height: 160px;
+  border: 1px solid rgba(136, 227, 222, 0.14);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(94, 234, 212, 0.08), rgba(255, 255, 255, 0.02));
+  padding: 14px;
+}
+
+.signal-strip__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.signal-strip__heading span {
+  color: #8fb8b6;
+}
+
+.signal-strip__heading strong {
+  color: #f7fffb;
+}
+
+.signal-bars {
+  display: flex;
+  align-items: end;
+  gap: 4px;
+  height: 92px;
+  overflow: hidden;
+}
+
+.signal-bars i {
+  flex: 1;
+  min-width: 4px;
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(180deg, #5eead4, #8a6df1);
+  box-shadow: 0 0 14px rgba(94, 234, 212, 0.24);
+  animation: signalRise 420ms ease both;
 }
 
 .cognitive-grid {
@@ -786,6 +881,7 @@ td,
 .relationship span.high {
   background: rgba(255, 107, 74, 0.16);
   color: #ff9b83;
+  animation: riskPulse 1.6s ease-in-out infinite;
 }
 
 .relationship span.medium {
@@ -800,5 +896,51 @@ td,
 
   .cognitive-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stream-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .stream-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes streamPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.88);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes signalRise {
+  from {
+    opacity: 0.25;
+    transform: scaleY(0.35);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes riskPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(255, 107, 74, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(255, 107, 74, 0.28);
   }
 }
