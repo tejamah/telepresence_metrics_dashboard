@@ -1,4 +1,3 @@
-
 # Embodied Presence Internet
 
 ## Overview
