@@ -22,6 +22,12 @@ embodiment intelligence, adaptive telepresence, AI-SBOM reliability, and publish
 - Real-time telemetry WebSocket stream
 - Embodiment prediction
 - Cognitive state engine
+- Embodied AI consciousness layer
+- Human digital twin
+- Telepresence language model interpretation
+- Reality synchronization engine
+- Embodied memory graph
+- Autonomous HRI scientist
 - Predictive failure engine
 - Explainable AI factors
 - AI-SBOM reliability monitoring

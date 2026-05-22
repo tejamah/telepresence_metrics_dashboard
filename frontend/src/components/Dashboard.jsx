@@ -82,6 +82,12 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry }) {
   const forecast = telemetry?.failure_forecast || latest.failure_forecast
   const explanations = telemetry?.prediction_explanation || latest.prediction_explanation || []
   const aiSbom = telemetry?.ai_sbom || latest.ai_sbom
+  const consciousness = telemetry?.embodied_consciousness || latest.embodied_consciousness
+  const digitalTwin = telemetry?.human_digital_twin || latest.human_digital_twin
+  const memoryGraph = telemetry?.embodied_memory_graph || latest.embodied_memory_graph
+  const tlm = telemetry?.tlm_interpretation || latest.tlm_interpretation
+  const realitySync = telemetry?.reality_sync || latest.reality_sync
+  const scientist = telemetry?.autonomous_scientist || latest.autonomous_scientist
 
   return (
     <div className="dashboard-grid">
@@ -200,6 +206,66 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry }) {
         </div>
       </section>
 
+      <section className="panel consciousness-panel">
+        <div className="panel-heading">
+          <h2>Embodied AI Consciousness Layer</h2>
+          <span>{consciousness?.state}</span>
+        </div>
+        <div className="cognitive-grid">
+          <LiveMetric label="Awareness" value={consciousness?.awareness} unit="%" />
+          <LiveMetric label="Attention" value={consciousness?.attention} unit="%" />
+          <LiveMetric label="Control" value={consciousness?.control_confidence} unit="%" />
+          <LiveMetric label="Continuity" value={consciousness?.presence_continuity} unit="%" />
+        </div>
+      </section>
+
+      <section className="panel twin-panel">
+        <div className="panel-heading">
+          <h2>Human Digital Twin</h2>
+          <span>{digitalTwin?.adaptation_profile}</span>
+        </div>
+        <div className="metric-list">
+          <div className="metric-row">
+            <span>Fatigue index</span>
+            <strong>{digitalTwin?.fatigue_index}%</strong>
+          </div>
+          <div className="metric-row">
+            <span>Latency sensitivity</span>
+            <strong>{digitalTwin?.embodiment_fingerprint?.latency_sensitivity}</strong>
+          </div>
+          <div className="metric-row">
+            <span>Recovery strategy</span>
+            <strong>{digitalTwin?.embodiment_fingerprint?.recovery_strategy}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-heading">
+          <h2>Reality Synchronization Engine</h2>
+          <span>{realitySync?.orchestration_state}</span>
+        </div>
+        <div className="cognitive-grid">
+          <LiveMetric label="Robot" value={realitySync?.physical_robot_sync} unit="%" />
+          <LiveMetric label="VR world" value={realitySync?.vr_world_sync} unit="%" />
+          <LiveMetric label="Body state" value={realitySync?.body_state_sync} unit="%" />
+          <LiveMetric label="Unified" value={realitySync?.unified_reality_score} unit="%" />
+        </div>
+      </section>
+
+      <section className="panel tlm-panel">
+        <div className="panel-heading">
+          <h2>Telepresence Language Model</h2>
+          <span>{tlm?.latent_state}</span>
+        </div>
+        <div className="research-sentence">{tlm?.research_sentence}</div>
+        <div className="timeline-mini">
+          {tlm?.reasoning_trace?.map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </div>
+      </section>
+
       <section className="panel risk-panel">
         <div className="panel-heading">
           <h2>Intelligent Risk Detection</h2>
@@ -216,6 +282,32 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry }) {
           ) : (
             <div className="empty-state">No active risk signals in the current stream.</div>
           )}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-heading">
+          <h2>Autonomous HRI Scientist</h2>
+          <span>hypothesis engine</span>
+        </div>
+        <div className="research-sentence">{scientist?.hypothesis}</div>
+        <div className="empty-state">{scientist?.suggested_experiment}</div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-heading">
+          <h2>Embodied Memory Graph</h2>
+          <span>{memoryGraph?.memory_strength}% strength</span>
+        </div>
+        <div className="action-list">
+          {memoryGraph?.past_failure_patterns?.map((pattern) => (
+            <span key={pattern}>{pattern}</span>
+          ))}
+        </div>
+        <div className="action-list">
+          {memoryGraph?.successful_recovery_strategies?.map((strategy) => (
+            <span key={strategy}>{strategy}</span>
+          ))}
         </div>
       </section>
 

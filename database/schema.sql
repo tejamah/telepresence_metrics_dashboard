@@ -153,3 +153,55 @@ CREATE TABLE adaptive_actions (
     applied BOOLEAN DEFAULT FALSE,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE embodied_consciousness_states (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    awareness FLOAT NOT NULL,
+    attention FLOAT NOT NULL,
+    control_confidence FLOAT NOT NULL,
+    adaptation FLOAT NOT NULL,
+    presence_continuity FLOAT NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE human_digital_twins (
+    id SERIAL PRIMARY KEY,
+    participant_id INT REFERENCES participants(id),
+    physiological_baseline JSONB,
+    adaptation_profile VARCHAR(120),
+    embodiment_fingerprint JSONB,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE embodied_memory_events (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    failure_pattern VARCHAR(160),
+    recovery_strategy VARCHAR(160),
+    memory_strength FLOAT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE reality_sync_states (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    physical_robot_sync FLOAT,
+    vr_world_sync FLOAT,
+    body_state_sync FLOAT,
+    physiological_stream_sync FLOAT,
+    unified_reality_score FLOAT,
+    orchestration_state VARCHAR(80),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE autonomous_scientist_outputs (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    observed TEXT,
+    hypothesis TEXT,
+    suggested_experiment TEXT,
+    analysis_plan JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -297,6 +297,127 @@ def ai_sbom_status(metrics: dict[str, float]) -> dict[str, Any]:
     }
 
 
+def embodied_consciousness(metrics: dict[str, float]) -> dict[str, Any]:
+    cognitive = cognitive_state(metrics)
+    embodiment = predict_embodiment_state(metrics)
+    awareness = round(min(100, max(0, cognitive["cognitive_stability"] * 0.55 + metrics.get("presence", 65) * 0.45)), 1)
+    attention = round(max(0, min(100, 100 - cognitive["attention_drift"])), 1)
+    control_confidence = round(
+        max(0, min(100, metrics.get("agency", 65) * 0.5 + embodiment["predicted_embodiment_quality"] * 0.5)),
+        1,
+    )
+    adaptation = round(max(0, min(100, 100 - cognitive["collapse_risk_score"] * 0.55)), 1)
+    continuity = round(statistics.mean([awareness, attention, control_confidence, adaptation]), 1)
+    return {
+        "awareness": awareness,
+        "attention": attention,
+        "control_confidence": control_confidence,
+        "adaptation": adaptation,
+        "presence_continuity": continuity,
+        "state": "integrated" if continuity >= 72 else "fragmenting" if continuity >= 52 else "collapsed",
+    }
+
+
+def human_digital_twin(participant_id: str, metrics: dict[str, float]) -> dict[str, Any]:
+    baseline_hr = 82
+    baseline_workload = 48
+    fatigue = round(max(0, min(100, (metrics.get("heart_rate", baseline_hr) - baseline_hr) * 1.2 + metrics.get("workload", 50) * 0.45)), 1)
+    adaptation_profile = "fast adapter" if metrics.get("agency", 0) >= 78 else "needs reinforcement" if metrics.get("ownership", 100) < 60 else "steady operator"
+    fingerprint = {
+        "latency_sensitivity": "high" if metrics.get("latency", 0) > 110 and metrics.get("agency", 100) < 75 else "moderate",
+        "stress_trigger": "workload" if metrics.get("workload", 0) > baseline_workload + 20 else "network instability",
+        "recovery_strategy": "haptic reinforcement" if metrics.get("ownership", 100) < 65 else "visual stabilization",
+    }
+    return {
+        "participant_id": participant_id,
+        "physiological_baseline": {"heart_rate": baseline_hr, "workload": baseline_workload},
+        "fatigue_index": fatigue,
+        "adaptation_profile": adaptation_profile,
+        "embodiment_fingerprint": fingerprint,
+    }
+
+
+def embodied_memory_graph(metrics: dict[str, float]) -> dict[str, Any]:
+    triggers = []
+    recoveries = []
+    if metrics.get("latency", 0) > 100:
+        triggers.append("latency spike")
+        recoveries.append("adaptive compression")
+    if metrics.get("workload", 0) > 70:
+        triggers.append("cognitive overload")
+        recoveries.append("robot speed reduction")
+    if metrics.get("ownership", 100) < 65:
+        triggers.append("ownership drift")
+        recoveries.append("haptic reinforcement")
+    if metrics.get("fps", 90) < 60:
+        triggers.append("visual instability")
+        recoveries.append("rendering simplification")
+    return {
+        "past_failure_patterns": triggers or ["no dominant failure pattern"],
+        "successful_recovery_strategies": recoveries or ["maintain current control envelope"],
+        "memory_strength": min(100, 40 + len(triggers) * 18),
+    }
+
+
+def telepresence_language_model(metrics: dict[str, float]) -> dict[str, Any]:
+    consciousness = embodied_consciousness(metrics)
+    forecast = failure_forecast(metrics)
+    explanation = explain_prediction(metrics)
+    top_factor = explanation[0]["factor"] if explanation else "stable multimodal alignment"
+    return {
+        "latent_state": consciousness["state"],
+        "reasoning_trace": [
+            f"presence continuity is {consciousness['presence_continuity']}%",
+            f"dominant causal factor: {top_factor}",
+            f"forecast: {forecast['prediction']}",
+        ],
+        "adaptive_decision": forecast["adaptive_actions"],
+        "research_sentence": (
+            f"The operator is in a {consciousness['state']} embodiment state with "
+            f"{forecast['prediction']} and {top_factor} as the main explanatory signal."
+        ),
+    }
+
+
+def reality_sync_state(metrics: dict[str, float]) -> dict[str, Any]:
+    network_sync = max(0, 100 - max(0, metrics.get("latency", 40) - 40) * 0.35 - metrics.get("packet_loss", 0) * 4)
+    visual_sync = min(100, metrics.get("fps", 75) * 1.1)
+    body_sync = statistics.mean([metrics.get("agency", 65), metrics.get("ownership", 65), metrics.get("presence", 65)])
+    physiological_sync = max(0, 100 - max(0, metrics.get("heart_rate", 80) - 85) * 0.8)
+    unified = round(statistics.mean([network_sync, visual_sync, body_sync, physiological_sync]), 1)
+    return {
+        "physical_robot_sync": round(network_sync, 1),
+        "vr_world_sync": round(visual_sync, 1),
+        "body_state_sync": round(body_sync, 1),
+        "physiological_stream_sync": round(physiological_sync, 1),
+        "unified_reality_score": unified,
+        "orchestration_state": "locked" if unified >= 75 else "drifting" if unified >= 55 else "desynchronized",
+    }
+
+
+def autonomous_scientist(metrics: dict[str, float]) -> dict[str, Any]:
+    hypothesis = "Latency above 120ms reduces ownership and agency during embodied teleoperation."
+    if metrics.get("workload", 0) > 75:
+        hypothesis = "Cognitive workload may mediate the relationship between network instability and task errors."
+    if metrics.get("ownership", 100) < 60:
+        hypothesis = "Visual-haptic mismatch may be the primary driver of ownership collapse."
+    return {
+        "observed": telepresence_language_model(metrics)["research_sentence"],
+        "hypothesis": hypothesis,
+        "suggested_experiment": "Run counterbalanced trials at 40ms, 80ms, 120ms, and 160ms latency with synchronized HRV, gaze, task errors, and ownership ratings.",
+        "analysis_plan": ["Pearson/Spearman correlation", "repeated-measures ANOVA", "mixed-effects regression", "failure-time prediction"],
+    }
+
+
+def simulation_scenarios() -> list[dict[str, Any]]:
+    return [
+        {"name": "network degradation", "variable": "latency", "range": "40-180ms", "expected_effect": "agency and ownership decline"},
+        {"name": "sensor failure", "variable": "packet_loss", "range": "0-8%", "expected_effect": "reality sync drift"},
+        {"name": "stress response", "variable": "workload", "range": "45-90", "expected_effect": "cognitive stability collapse"},
+        {"name": "robot lag", "variable": "haptic_delay", "range": "20-220ms", "expected_effect": "control confidence loss"},
+    ]
+
+
 def _store_session(payload: ExperimentSession) -> StoredSession:
     session = StoredSession(
         id=len(SESSIONS) + 1,
@@ -387,6 +508,12 @@ def _session_response(session: StoredSession) -> dict[str, Any]:
         "prediction_explanation": explain_prediction(session.metrics),
         "failure_forecast": failure_forecast(session.metrics),
         "ai_sbom": ai_sbom_status(session.metrics),
+        "embodied_consciousness": embodied_consciousness(session.metrics),
+        "human_digital_twin": human_digital_twin(session.participant_id, session.metrics),
+        "embodied_memory_graph": embodied_memory_graph(session.metrics),
+        "tlm_interpretation": telepresence_language_model(session.metrics),
+        "reality_sync": reality_sync_state(session.metrics),
+        "autonomous_scientist": autonomous_scientist(session.metrics),
     }
 
 
@@ -564,6 +691,12 @@ def platform_architecture() -> dict[str, Any]:
             "digital human model",
             "live research timeline",
             "AI-SBOM reliability monitor",
+            "embodied consciousness layer",
+            "human digital twin",
+            "telepresence language model",
+            "reality synchronization engine",
+            "embodied memory graph",
+            "scientific simulation engine",
             "explainable AI layer",
             "predictive failure engine",
             "adaptive optimization loop",
@@ -588,6 +721,12 @@ def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
     payload["prediction_explanation"] = explain_prediction(payload["metrics"])
     payload["failure_forecast"] = failure_forecast(payload["metrics"])
     payload["ai_sbom"] = ai_sbom_status(payload["metrics"])
+    payload["embodied_consciousness"] = embodied_consciousness(payload["metrics"])
+    payload["human_digital_twin"] = human_digital_twin(payload["participant_id"], payload["metrics"])
+    payload["embodied_memory_graph"] = embodied_memory_graph(payload["metrics"])
+    payload["tlm_interpretation"] = telepresence_language_model(payload["metrics"])
+    payload["reality_sync"] = reality_sync_state(payload["metrics"])
+    payload["autonomous_scientist"] = autonomous_scientist(payload["metrics"])
     TELEMETRY_STREAM.append(payload)
     return payload
 
@@ -595,6 +734,18 @@ def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
 @router.get("/telemetry/latest")
 def latest_telemetry() -> dict[str, Any]:
     return {"events": TELEMETRY_STREAM[-50:]}
+
+
+@router.get("/research/scientist")
+def research_scientist() -> dict[str, Any]:
+    _seed()
+    latest = SESSIONS[-1]
+    return autonomous_scientist(latest.metrics)
+
+
+@router.get("/simulation/scenarios")
+def simulation_catalog() -> dict[str, Any]:
+    return {"scenarios": simulation_scenarios()}
 
 
 @router.websocket("/ws/telemetry")
@@ -623,6 +774,12 @@ async def telemetry_socket(websocket: WebSocket) -> None:
                 "prediction_explanation": explain_prediction(simulated),
                 "failure_forecast": failure_forecast(simulated),
                 "ai_sbom": ai_sbom_status(simulated),
+                "embodied_consciousness": embodied_consciousness(simulated),
+                "human_digital_twin": human_digital_twin(SESSIONS[tick % len(SESSIONS)].participant_id, simulated),
+                "embodied_memory_graph": embodied_memory_graph(simulated),
+                "tlm_interpretation": telepresence_language_model(simulated),
+                "reality_sync": reality_sync_state(simulated),
+                "autonomous_scientist": autonomous_scientist(simulated),
             }
             TELEMETRY_STREAM.append(event)
             await websocket.send_json(event)

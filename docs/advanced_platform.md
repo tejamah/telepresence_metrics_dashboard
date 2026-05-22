@@ -26,6 +26,10 @@ Human Operator
 - Streaming layer: Kafka topics for EEG, HRV, eye tracking, hand tracking, robot telemetry, WebRTC events, and network metrics.
 - Real-time engine: windowed aggregation, timestamp synchronization, jitter detection, missing-sensor detection.
 - Cognitive state engine: attention drift, stress escalation, cognitive overload, and immersion collapse risk.
+- Embodied AI consciousness layer: operational modeling of awareness, attention, control confidence, adaptation, and presence continuity.
+- Neuroadaptive telepresence: robot speed, haptic reinforcement, rendering complexity, and compression respond to cognitive state.
+- Human digital twin: behavioral memory, physiological baseline, adaptation profile, and embodiment fingerprint per operator.
+- Telepresence language model: transformer-style reasoning over telemetry, physiology, robot state, behavior, and embodiment metrics.
 - Embodied AI graph: agency, ownership, presence, latency, stress, and performance as a dynamic relationship graph.
 - AI analytics: embodiment prediction, overload detection, motion-sickness risk, and teleoperation failure prediction.
 - Risk engine: unstable pipelines, hallucinated robot states, synchronization failures, unsafe control conditions, and embodiment degradation.
@@ -35,6 +39,8 @@ Human Operator
 - Adaptive optimization loop: graphics quality, haptic intensity, network compression, and robot responsiveness adapt to preserve embodiment.
 - Dataset builder: synchronized multimodal datasets with labels for embodiment states, risk states, and task outcomes.
 - Digital twin: replayable user, robot, and environment state for session analysis.
+- Reality synchronization engine: keeps robot state, VR state, physiological state, digital twin, and AI predictions aligned.
+- Scientific simulation engine: tests network degradation, stress responses, sensor failure, and robot lag before deployment.
 
 ## Current Implementation
 - `GET /platform/architecture` exposes the operating platform pipeline and research modules.

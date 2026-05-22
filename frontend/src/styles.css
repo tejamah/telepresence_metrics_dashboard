@@ -684,7 +684,10 @@ button {
 }
 
 .cognitive-panel,
-.forecast-panel {
+.forecast-panel,
+.consciousness-panel,
+.twin-panel,
+.tlm-panel {
   grid-column: span 6;
 }
 
@@ -725,6 +728,27 @@ button {
   border-radius: 999px;
   color: #c9f8f2;
   padding: 6px 10px;
+}
+
+.research-sentence {
+  border: 1px solid rgba(94, 234, 212, 0.2);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(94, 234, 212, 0.08), rgba(138, 109, 241, 0.08));
+  color: #e9fffb;
+  line-height: 1.55;
+  padding: 14px;
+}
+
+.timeline-mini {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.timeline-mini span {
+  border-left: 2px solid rgba(255, 184, 77, 0.8);
+  color: #c9f8f2;
+  padding-left: 10px;
 }
 
 .metric-row,

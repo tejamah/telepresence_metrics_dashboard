@@ -13,10 +13,14 @@
 2. A multimodal sensor fusion layer synchronizes EEG, HRV, gaze, hand tracking, motion traces, robot telemetry, network metrics, and WebRTC quality.
 3. A real-time cognitive state engine estimates overload, attention drift, stress escalation, and immersion collapse risk.
 4. An embodiment intelligence model tracks agency, ownership, presence, latency, stress, and performance as a dynamic relationship graph.
-5. A predictive failure engine forecasts teleoperation instability before unsafe breakdowns occur.
-6. An AI-SBOM reliability monitor links dependency instability to embodiment degradation and teleoperation failures.
-7. An adaptive telepresence loop tunes graphics quality, haptic intensity, compression, and robot responsiveness.
-8. The research copilot generates hypotheses, suggested experiments, explanations, and paper-ready findings.
+5. An embodied AI consciousness layer models awareness, attention, control confidence, adaptation, and presence continuity.
+6. A human digital twin stores physiological baselines, adaptation profiles, embodiment fingerprints, and recovery memories.
+7. A telepresence language model translates telemetry into predictions, explanations, and adaptive decisions.
+8. A reality synchronization engine aligns robot state, VR state, physiological streams, digital twin state, and AI predictions.
+9. A predictive failure engine forecasts teleoperation instability before unsafe breakdowns occur.
+10. An AI-SBOM reliability monitor links dependency instability to embodiment degradation and teleoperation failures.
+11. An adaptive telepresence loop tunes graphics quality, haptic intensity, compression, and robot responsiveness.
+12. The autonomous HRI scientist generates hypotheses, suggested experiments, explanations, and paper-ready findings.
 
 ## API
 - `GET /metrics` returns seeded or uploaded sessions, scores, insights, and aggregate relationships.
