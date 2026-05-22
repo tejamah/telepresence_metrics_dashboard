@@ -22,6 +22,14 @@
 11. An adaptive telepresence loop tunes graphics quality, haptic intensity, compression, and robot responsiveness.
 12. The autonomous HRI scientist generates hypotheses, suggested experiments, explanations, and paper-ready findings.
 
+## Post-Screen Presence Flow
+1. Neural presence models intention clarity, emotional bandwidth, cognitive state, and embodiment signal.
+2. Persistent digital self profiles preserve operator identity, memory, preferences, recovery strategies, and behavioral continuity.
+3. Emotionally intelligent AI companion interventions support the operator when overload, drift, or instability emerges.
+4. Full-sensory telepresence models haptic, visual, spatial audio, and tactile fidelity.
+5. Shared reality spaces estimate collaboration trust, team cognitive load, and social presence synchronization.
+6. Autonomous reality orchestration adapts sensory fidelity, environmental complexity, compression, and teleoperation behavior to preserve presence continuity.
+
 ## API
 - `GET /metrics` returns seeded or uploaded sessions, scores, insights, and aggregate relationships.
 - `POST /upload-csv` accepts CSV files with `participant_id`, `task_type`, `setup`, `session_time`, and metric columns.

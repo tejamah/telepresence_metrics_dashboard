@@ -418,6 +418,130 @@ def simulation_scenarios() -> list[dict[str, Any]]:
     ]
 
 
+def neural_presence_state(metrics: dict[str, float]) -> dict[str, Any]:
+    consciousness = embodied_consciousness(metrics)
+    reality = reality_sync_state(metrics)
+    emotional_bandwidth = max(0, min(100, 100 - abs(metrics.get("heart_rate", 82) - 88) * 1.3 - metrics.get("workload", 50) * 0.2))
+    intention_clarity = max(0, min(100, metrics.get("agency", 65) * 0.7 + metrics.get("task_efficiency", 65) * 0.3))
+    embodiment_signal = predict_embodiment_state(metrics)["predicted_embodiment_quality"]
+    presence_transmission = round(statistics.mean([
+        consciousness["presence_continuity"],
+        reality["unified_reality_score"],
+        emotional_bandwidth,
+        intention_clarity,
+        embodiment_signal,
+    ]), 1)
+    return {
+        "presence_transmission": presence_transmission,
+        "intention_clarity": round(intention_clarity, 1),
+        "emotional_bandwidth": round(emotional_bandwidth, 1),
+        "embodiment_signal": embodiment_signal,
+        "state": "felt-present" if presence_transmission >= 75 else "partial-presence" if presence_transmission >= 55 else "presence-fragmented",
+    }
+
+
+def persistent_digital_self(participant_id: str, metrics: dict[str, float]) -> dict[str, Any]:
+    twin = human_digital_twin(participant_id, metrics)
+    memory = embodied_memory_graph(metrics)
+    return {
+        "identity": participant_id,
+        "continuity_score": round(max(0, min(100, 70 + memory["memory_strength"] * 0.15 - twin["fatigue_index"] * 0.12)), 1),
+        "embodiment_preferences": {
+            "preferred_recovery": twin["embodiment_fingerprint"]["recovery_strategy"],
+            "sensitivity": twin["embodiment_fingerprint"]["latency_sensitivity"],
+            "stability_mode": "calm-focus" if twin["fatigue_index"] > 60 else "performance",
+        },
+        "memory_aware_summary": f"{participant_id} adapts as a {twin['adaptation_profile']} with {twin['embodiment_fingerprint']['recovery_strategy']} as the current recovery path.",
+    }
+
+
+def emotional_ai_companion(metrics: dict[str, float]) -> dict[str, Any]:
+    cognitive = cognitive_state(metrics)
+    forecast = failure_forecast(metrics)
+    if cognitive["stress_escalation"] == "elevated":
+        message = "You appear cognitively overloaded. Reducing environmental complexity and activating stabilization mode."
+        tone = "supportive"
+    elif forecast["prediction"] == "teleoperation instability":
+        message = "Instability is emerging. I am prioritizing control confidence and slowing the interaction loop."
+        tone = "directive"
+    else:
+        message = "Presence is holding. I will maintain sensory fidelity and monitor for drift."
+        tone = "calm"
+    return {
+        "tone": tone,
+        "message": message,
+        "interventions": forecast["adaptive_actions"],
+        "emotional_state_estimate": "overloaded" if cognitive["stress_escalation"] == "elevated" else "regulated",
+    }
+
+
+def sensory_presence_state(metrics: dict[str, float]) -> dict[str, Any]:
+    haptic = max(0, min(100, 100 - max(0, metrics.get("haptic_delay", 30) - 40) * 0.35))
+    visual = max(0, min(100, metrics.get("fps", 70) * 1.15))
+    audio = max(0, min(100, 96 - metrics.get("packet_loss", 0) * 5))
+    tactile = max(0, min(100, statistics.mean([haptic, metrics.get("ownership", 65)])))
+    sensory_fidelity = round(statistics.mean([haptic, visual, audio, tactile]), 1)
+    return {
+        "haptic_fidelity": round(haptic, 1),
+        "visual_fidelity": round(visual, 1),
+        "spatial_audio_fidelity": round(audio, 1),
+        "tactile_presence": round(tactile, 1),
+        "full_sensory_presence": sensory_fidelity,
+    }
+
+
+def shared_reality_space(metrics: dict[str, float]) -> dict[str, Any]:
+    trust = max(0, min(100, metrics.get("collaboration_quality", 70) * 0.7 + metrics.get("presence", 65) * 0.3))
+    team_load = max(0, min(100, metrics.get("workload", 50) * 0.6 + max(0, metrics.get("latency", 50) - 70) * 0.2))
+    synchrony = max(0, min(100, 100 - metrics.get("packet_loss", 0) * 4 - max(0, metrics.get("latency", 50) - 80) * 0.25))
+    return {
+        "collaboration_trust": round(trust, 1),
+        "team_cognitive_load": round(team_load, 1),
+        "social_presence_sync": round(synchrony, 1),
+        "space_state": "co-present" if synchrony >= 75 and trust >= 70 else "loosely-coupled",
+    }
+
+
+def cognitive_augmentation(metrics: dict[str, float]) -> dict[str, Any]:
+    mistake_risk = max(0, min(100, metrics.get("error_rate", 8) * 3 + max(0, metrics.get("workload", 50) - 65) * 1.2))
+    focus_boost = max(0, min(100, 100 - cognitive_state(metrics)["attention_drift"]))
+    precision_boost = max(0, min(100, metrics.get("agency", 65) * 0.4 + metrics.get("task_efficiency", 65) * 0.6))
+    return {
+        "mistake_prediction_risk": round(mistake_risk, 1),
+        "focus_stabilization": round(focus_boost, 1),
+        "control_precision_gain": round(precision_boost, 1),
+        "augmentation_mode": "protective" if mistake_risk > 55 else "performance-amplifying",
+    }
+
+
+def reality_orchestration(metrics: dict[str, float]) -> dict[str, Any]:
+    companion = emotional_ai_companion(metrics)
+    sensory = sensory_presence_state(metrics)
+    actions = list(companion["interventions"])
+    if sensory["full_sensory_presence"] < 70:
+        actions.append("rebalance sensory fidelity")
+    if neural_presence_state(metrics)["presence_transmission"] < 60:
+        actions.append("increase presence reinforcement")
+    return {
+        "orchestration_goal": "preserve embodiment continuity",
+        "active_actions": actions,
+        "environment_complexity": "reduced" if metrics.get("workload", 0) > 75 else "normal",
+        "sensory_fidelity_target": "stabilize" if sensory["full_sensory_presence"] < 75 else "maximize",
+    }
+
+
+def post_screen_experience(metrics: dict[str, float], participant_id: str) -> dict[str, Any]:
+    return {
+        "neural_presence": neural_presence_state(metrics),
+        "persistent_digital_self": persistent_digital_self(participant_id, metrics),
+        "ai_companion": emotional_ai_companion(metrics),
+        "sensory_presence": sensory_presence_state(metrics),
+        "shared_reality": shared_reality_space(metrics),
+        "cognitive_augmentation": cognitive_augmentation(metrics),
+        "reality_orchestration": reality_orchestration(metrics),
+    }
+
+
 def _store_session(payload: ExperimentSession) -> StoredSession:
     session = StoredSession(
         id=len(SESSIONS) + 1,
@@ -514,6 +638,7 @@ def _session_response(session: StoredSession) -> dict[str, Any]:
         "tlm_interpretation": telepresence_language_model(session.metrics),
         "reality_sync": reality_sync_state(session.metrics),
         "autonomous_scientist": autonomous_scientist(session.metrics),
+        "post_screen_experience": post_screen_experience(session.metrics, session.participant_id),
     }
 
 
@@ -697,6 +822,13 @@ def platform_architecture() -> dict[str, Any]:
             "reality synchronization engine",
             "embodied memory graph",
             "scientific simulation engine",
+            "neural presence system",
+            "persistent digital self",
+            "emotionally intelligent AI companion",
+            "full-sensory telepresence",
+            "shared reality spaces",
+            "cognitive augmentation layer",
+            "autonomous reality orchestration",
             "explainable AI layer",
             "predictive failure engine",
             "adaptive optimization loop",
@@ -727,6 +859,7 @@ def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
     payload["tlm_interpretation"] = telepresence_language_model(payload["metrics"])
     payload["reality_sync"] = reality_sync_state(payload["metrics"])
     payload["autonomous_scientist"] = autonomous_scientist(payload["metrics"])
+    payload["post_screen_experience"] = post_screen_experience(payload["metrics"], payload["participant_id"])
     TELEMETRY_STREAM.append(payload)
     return payload
 
@@ -746,6 +879,13 @@ def research_scientist() -> dict[str, Any]:
 @router.get("/simulation/scenarios")
 def simulation_catalog() -> dict[str, Any]:
     return {"scenarios": simulation_scenarios()}
+
+
+@router.get("/presence/post-screen")
+def post_screen_presence() -> dict[str, Any]:
+    _seed()
+    latest = SESSIONS[-1]
+    return post_screen_experience(latest.metrics, latest.participant_id)
 
 
 @router.websocket("/ws/telemetry")
@@ -780,6 +920,7 @@ async def telemetry_socket(websocket: WebSocket) -> None:
                 "tlm_interpretation": telepresence_language_model(simulated),
                 "reality_sync": reality_sync_state(simulated),
                 "autonomous_scientist": autonomous_scientist(simulated),
+                "post_screen_experience": post_screen_experience(simulated, SESSIONS[tick % len(SESSIONS)].participant_id),
             }
             TELEMETRY_STREAM.append(event)
             await websocket.send_json(event)

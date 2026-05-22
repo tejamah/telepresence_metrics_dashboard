@@ -85,8 +85,8 @@ function App() {
     <main className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">HRI / VR evaluation framework</p>
-          <h1>Embodied AI Research Operating Platform</h1>
+          <p className="eyebrow">Post-screen human experience infrastructure</p>
+          <h1>Embodied Presence Internet</h1>
         </div>
         <label className="upload-button">
           <input type="file" accept=".csv" onChange={handleUpload} disabled={uploading} />

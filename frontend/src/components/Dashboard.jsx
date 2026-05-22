@@ -88,6 +88,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry }) {
   const tlm = telemetry?.tlm_interpretation || latest.tlm_interpretation
   const realitySync = telemetry?.reality_sync || latest.reality_sync
   const scientist = telemetry?.autonomous_scientist || latest.autonomous_scientist
+  const presence = telemetry?.post_screen_experience || latest.post_screen_experience
 
   return (
     <div className="dashboard-grid">
@@ -133,6 +134,89 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry }) {
           <span>00:22 Physiological response sampled</span>
           <span>00:30 Network jitter correlated</span>
           <span>00:36 Failure forecast updated</span>
+        </div>
+      </section>
+
+      <section className="panel presence-panel">
+        <div className="panel-heading">
+          <h2>Neural Presence System</h2>
+          <span>{presence?.neural_presence?.state}</span>
+        </div>
+        <div className="cognitive-grid">
+          <LiveMetric label="Presence" value={presence?.neural_presence?.presence_transmission} unit="%" />
+          <LiveMetric label="Intention" value={presence?.neural_presence?.intention_clarity} unit="%" />
+          <LiveMetric label="Emotion" value={presence?.neural_presence?.emotional_bandwidth} unit="%" />
+          <LiveMetric label="Embodiment" value={presence?.neural_presence?.embodiment_signal} unit="%" />
+        </div>
+      </section>
+
+      <section className="panel companion-panel">
+        <div className="panel-heading">
+          <h2>Embodied AI Companion</h2>
+          <span>{presence?.ai_companion?.tone}</span>
+        </div>
+        <div className="research-sentence">{presence?.ai_companion?.message}</div>
+        <div className="action-list">
+          {presence?.ai_companion?.interventions?.map((item) => (
+            <span key={item}>{item}</span>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-heading">
+          <h2>Persistent Digital Self</h2>
+          <span>{presence?.persistent_digital_self?.continuity_score}% continuity</span>
+        </div>
+        <div className="research-sentence">{presence?.persistent_digital_self?.memory_aware_summary}</div>
+        <div className="metric-list">
+          <div className="metric-row">
+            <span>Stability mode</span>
+            <strong>{presence?.persistent_digital_self?.embodiment_preferences?.stability_mode}</strong>
+          </div>
+          <div className="metric-row">
+            <span>Preferred recovery</span>
+            <strong>{presence?.persistent_digital_self?.embodiment_preferences?.preferred_recovery}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-heading">
+          <h2>Full-Sensory Telepresence</h2>
+          <span>{presence?.sensory_presence?.full_sensory_presence}% fidelity</span>
+        </div>
+        <div className="cognitive-grid">
+          <LiveMetric label="Haptics" value={presence?.sensory_presence?.haptic_fidelity} unit="%" />
+          <LiveMetric label="Visual" value={presence?.sensory_presence?.visual_fidelity} unit="%" />
+          <LiveMetric label="Audio" value={presence?.sensory_presence?.spatial_audio_fidelity} unit="%" />
+          <LiveMetric label="Tactile" value={presence?.sensory_presence?.tactile_presence} unit="%" />
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-heading">
+          <h2>Shared Reality Space</h2>
+          <span>{presence?.shared_reality?.space_state}</span>
+        </div>
+        <div className="cognitive-grid">
+          <LiveMetric label="Trust" value={presence?.shared_reality?.collaboration_trust} unit="%" />
+          <LiveMetric label="Team load" value={presence?.shared_reality?.team_cognitive_load} unit="%" />
+          <LiveMetric label="Social sync" value={presence?.shared_reality?.social_presence_sync} unit="%" />
+          <LiveMetric label="Augment" value={presence?.cognitive_augmentation?.control_precision_gain} unit="%" />
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-heading">
+          <h2>Reality Orchestration</h2>
+          <span>{presence?.reality_orchestration?.sensory_fidelity_target}</span>
+        </div>
+        <div className="research-sentence">{presence?.reality_orchestration?.orchestration_goal}</div>
+        <div className="action-list">
+          {presence?.reality_orchestration?.active_actions?.map((item) => (
+            <span key={item}>{item}</span>
+          ))}
         </div>
       </section>
 

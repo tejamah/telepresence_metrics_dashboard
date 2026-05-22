@@ -205,3 +205,54 @@ CREATE TABLE autonomous_scientist_outputs (
     analysis_plan JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE neural_presence_states (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    presence_transmission FLOAT NOT NULL,
+    intention_clarity FLOAT,
+    emotional_bandwidth FLOAT,
+    embodiment_signal FLOAT,
+    state VARCHAR(80),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE persistent_digital_self_profiles (
+    id SERIAL PRIMARY KEY,
+    participant_id INT REFERENCES participants(id),
+    continuity_score FLOAT NOT NULL,
+    embodiment_preferences JSONB,
+    memory_aware_summary TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ai_companion_interventions (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    tone VARCHAR(80),
+    message TEXT NOT NULL,
+    interventions JSONB,
+    emotional_state_estimate VARCHAR(80),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE sensory_presence_states (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    haptic_fidelity FLOAT,
+    visual_fidelity FLOAT,
+    spatial_audio_fidelity FLOAT,
+    tactile_presence FLOAT,
+    full_sensory_presence FLOAT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE shared_reality_spaces (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES sessions(id),
+    collaboration_trust FLOAT,
+    team_cognitive_load FLOAT,
+    social_presence_sync FLOAT,
+    space_state VARCHAR(80),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -687,8 +687,21 @@ button {
 .forecast-panel,
 .consciousness-panel,
 .twin-panel,
-.tlm-panel {
+.tlm-panel,
+.presence-panel,
+.companion-panel {
   grid-column: span 6;
+}
+
+.presence-panel {
+  border-color: rgba(138, 109, 241, 0.35);
+  background:
+    linear-gradient(135deg, rgba(138, 109, 241, 0.16), rgba(94, 234, 212, 0.06)),
+    rgba(11, 16, 22, 0.78);
+}
+
+.companion-panel {
+  border-color: rgba(255, 184, 77, 0.28);
 }
 
 .cognitive-grid {

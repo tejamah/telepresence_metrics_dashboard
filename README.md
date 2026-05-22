@@ -1,10 +1,11 @@
 
-# Embodied AI Research Operating Platform
+# Embodied Presence Internet
 
 ## Overview
 This project is designed for Human-Robot Interaction (HRI), telepresence, VR/AR, robotics, and embodied AI research.
-It is evolving from a metrics dashboard into a real-time research operating platform for cognitive state estimation,
-embodiment intelligence, adaptive telepresence, AI-SBOM reliability, and publishable multimodal analytics.
+It is evolving from a metrics dashboard into post-screen human experience infrastructure for remote presence,
+persistent digital identity, cognitive augmentation, emotionally intelligent AI companionship, adaptive reality,
+and publishable multimodal analytics.
 
 ## Tech Stack
 - Frontend: React, future TypeScript/Tailwind/D3/Three.js modules
@@ -28,6 +29,12 @@ embodiment intelligence, adaptive telepresence, AI-SBOM reliability, and publish
 - Reality synchronization engine
 - Embodied memory graph
 - Autonomous HRI scientist
+- Neural presence system
+- Persistent digital self
+- Emotionally intelligent AI companion
+- Full-sensory telepresence model
+- Shared reality space model
+- Autonomous reality orchestration
 - Predictive failure engine
 - Explainable AI factors
 - AI-SBOM reliability monitoring

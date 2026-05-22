@@ -1,12 +1,12 @@
-# Embodied AI Research Operating Platform
+# Embodied Presence Internet
 
 ## Research Positioning
-This project should evolve from a dashboard into a cinematic real-time research operating platform for HRI, VR/AR, robotics, embodied AI, and adaptive telepresence evaluation.
+This project should evolve from a dashboard into post-screen human experience infrastructure for remote presence, emotionally intelligent AI companionship, cognitive augmentation, persistent digital identity, and adaptive reality.
 
 Proposed contribution:
 
 ```text
-An AI-driven cognitive telepresence operating system for embodied human-robot interaction.
+An embodied presence internet for transmitting intention, emotion, cognitive state, and embodiment continuity across humans, robots, AI agents, and shared realities.
 ```
 
 ## Target Architecture
@@ -18,10 +18,18 @@ Human Operator
     -> Real-Time Cognitive State Engine
     -> Embodiment Intelligence Model
     -> Adaptive Telepresence System
-    -> Research Analytics + AI Copilot
+    -> Neural Presence Transmission
+    -> Shared Reality + AI Companion
 ```
 
 ## Platform Modules
+- Neural presence system: transmits intention, emotional bandwidth, cognitive state, behavioral cues, and embodiment signals.
+- Persistent digital self: remembers behavior, stress response, collaboration history, recovery strategies, and embodiment preferences.
+- Emotionally intelligent AI companion: senses overload, stabilizes cognition, adapts teleoperation, and communicates supportively.
+- Full-sensory telepresence: models haptics, temperature, force feedback, tactile simulation, spatial audio, and gaze synchronization.
+- Shared reality spaces: multiple humans, robots, and AI agents collaborate in persistent spatial worlds.
+- Cognitive augmentation: predicts mistakes, stabilizes focus, improves control precision, and reduces overload.
+- Reality orchestration: dynamically controls visuals, haptics, compression, robot behavior, sensory fidelity, and environmental complexity.
 - Device adapters: ROS2, Unity, Unreal Engine, OpenXR, Meta Quest APIs.
 - Streaming layer: Kafka topics for EEG, HRV, eye tracking, hand tracking, robot telemetry, WebRTC events, and network metrics.
 - Real-time engine: windowed aggregation, timestamp synchronization, jitter detection, missing-sensor detection.
