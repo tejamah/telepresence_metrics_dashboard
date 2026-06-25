@@ -37,7 +37,6 @@ and publishable multimodal analytics.
 - Autonomous reality orchestration
 - Predictive failure engine
 - Explainable AI factors
-- AI-SBOM reliability monitoring
 - Intelligent risk detection
 - Pearson correlation analytics
 - Research platform architecture endpoint
@@ -46,7 +45,7 @@ and publishable multimodal analytics.
 Use the sample in `data/sample_metrics.csv` or upload rows with these columns:
 
 ```text
-participant_id,task_type,setup,session_time,embodiment,ownership,agency,presence,task_efficiency,task_completion_time,error_rate,safety_events,workload,collaboration_quality,heart_rate,hrv,latency,fps,packet_loss,visual_match,haptic_delay
+participant_id,task_type,setup,session_time,embodiment,ownership,agency,self_location,presence,social_presence,situation_awareness,trust,task_efficiency,task_completion_time,error_rate,path_efficiency,safety_events,workload,collaboration_quality,heart_rate,hrv,galvanic_response,cybersickness,latency,jitter,fps,packet_loss,tracking_dropout,visual_match,haptic_delay,timestamp_accuracy,missing_data_percent,fusion_latency,sampling_sync,autonomy_assistance,adaptation_disclosed,override_available
 ```
 
 ## Run Backend

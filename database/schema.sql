@@ -135,16 +135,6 @@ CREATE TABLE explainability_factors (
     detail TEXT NOT NULL
 );
 
-CREATE TABLE ai_sbom_components (
-    id SERIAL PRIMARY KEY,
-    component_name VARCHAR(160) NOT NULL,
-    component_type VARCHAR(80) NOT NULL,
-    baseline_reliability FLOAT NOT NULL,
-    runtime_reliability FLOAT,
-    status VARCHAR(40),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE adaptive_actions (
     id SERIAL PRIMARY KEY,
     session_id INT REFERENCES sessions(id),

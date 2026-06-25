@@ -8,7 +8,6 @@ Planned contracts:
 - CognitiveState.
 - EmbodimentPrediction.
 - FailureForecast.
-- AiSbomComponent.
 - DigitalTwin.
 - PresenceTransmission.
 - ReplayEvent.

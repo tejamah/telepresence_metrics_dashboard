@@ -18,9 +18,8 @@
 7. A telepresence language model translates telemetry into predictions, explanations, and adaptive decisions.
 8. A reality synchronization engine aligns robot state, VR state, physiological streams, digital twin state, and AI predictions.
 9. A predictive failure engine forecasts teleoperation instability before unsafe breakdowns occur.
-10. An AI-SBOM reliability monitor links dependency instability to embodiment degradation and teleoperation failures.
-11. An adaptive telepresence loop tunes graphics quality, haptic intensity, compression, and robot responsiveness.
-12. The autonomous HRI scientist generates hypotheses, suggested experiments, explanations, and paper-ready findings.
+10. An adaptive telepresence loop tunes graphics quality, haptic intensity, compression, and robot responsiveness.
+11. The autonomous HRI scientist generates hypotheses, suggested experiments, explanations, and paper-ready findings.
 
 ## Post-Screen Presence Flow
 1. Neural presence models intention clarity, emotional bandwidth, cognitive state, and embodiment signal.

@@ -16,6 +16,14 @@ const metricLabels: Record<string, string> = {
   visualization: 'Visualization',
 }
 
+const catemLayerLabels: Record<string, string> = {
+  experience: 'Experience',
+  action: 'Action',
+  human_state: 'Human state',
+  system: 'System',
+  data_interpretation: 'Data & interpretation',
+}
+
 const rawMetrics = [
   ['task_completion_time', 'Task time', 's'],
   ['error_rate', 'Error rate', '%'],
@@ -144,7 +152,6 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
   const cognitive = telemetry?.cognitive_state || latest.cognitive_state
   const forecast = telemetry?.failure_forecast || latest.failure_forecast
   const explanations = telemetry?.prediction_explanation || latest.prediction_explanation || []
-  const aiSbom = telemetry?.ai_sbom || latest.ai_sbom
   const consciousness = telemetry?.embodied_consciousness || latest.embodied_consciousness
   const digitalTwin = telemetry?.human_digital_twin || latest.human_digital_twin
   const memoryGraph = telemetry?.embodied_memory_graph || latest.embodied_memory_graph
@@ -152,6 +159,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
   const realitySync = telemetry?.reality_sync || latest.reality_sync
   const scientist = telemetry?.autonomous_scientist || latest.autonomous_scientist
   const presence = telemetry?.post_screen_experience || latest.post_screen_experience
+  const catem = telemetry?.catem || latest.catem
   const simulatorState = telemetry?.simulator_state
   const signalHistory = telemetryHistory.length ? telemetryHistory : telemetry ? [telemetry] : []
   const latencySeries = signalHistory.map((event) => event.metrics.latency ?? 0)
@@ -199,6 +207,62 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
         </div>
         <div className="timeline-strip">
           <LiveTimeline history={signalHistory} />
+        </div>
+      </section>
+
+      <section className="panel catem-overview">
+        <div className="panel-heading">
+          <div>
+            <p className="eyebrow">PDF-derived evaluation framework</p>
+            <h2>CATEM Cross-Layer Assessment</h2>
+          </div>
+          <span>{catem?.evidence_quality?.score}% evidence quality</span>
+        </div>
+        <div className="catem-layer-grid">
+          {Object.entries(catem?.layers || {}).map(([key, layer]) => (
+            <ScoreBar
+              key={key}
+              label={catemLayerLabels[key] || key}
+              score={layer.score}
+              level={layer.level}
+            />
+          ))}
+        </div>
+        <div className="evidence-strip">
+          <LiveMetric label="Metric coverage" value={catem?.evidence_quality?.metric_coverage} unit="%" />
+          <LiveMetric label="Synchronization" value={catem?.evidence_quality?.synchronization_quality} unit="%" />
+          <LiveMetric label="Missing data" value={catem?.evidence_quality?.missing_data_percent} unit="%" />
+        </div>
+      </section>
+
+      <section className="panel catem-propositions">
+        <div className="panel-heading">
+          <h2>CATEM Propositions P1–P6</h2>
+          <span>live cross-layer tests</span>
+        </div>
+        <div className="proposition-grid">
+          {catem?.propositions?.map((proposition) => (
+            <article className="proposition-card" key={proposition.id}>
+              <div>
+                <strong>{proposition.id}</strong>
+                <span className={proposition.status}>{proposition.status}</span>
+              </div>
+              <h3>{proposition.name}</h3>
+              <p>{proposition.evidence}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel catem-recommendations">
+        <div className="panel-heading">
+          <h2>Agency-Preserving Adaptation</h2>
+          <span>explainable and overridable</span>
+        </div>
+        <div className="action-list">
+          {catem?.adaptive_recommendations?.map((recommendation) => (
+            <span key={recommendation}>{recommendation}</span>
+          ))}
         </div>
       </section>
 
@@ -526,21 +590,6 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
               <strong>{Math.round(item.impact * 100)}%</strong>
             </div>
           )) : <div className="empty-state">Prediction model is not flagging dominant degradation factors.</div>}
-        </div>
-      </section>
-
-      <section className="panel">
-        <div className="panel-heading">
-          <h2>AI-SBOM Reliability</h2>
-          <span>{aiSbom?.dependency_risk}</span>
-        </div>
-        <div className="metric-list">
-          {aiSbom?.components?.map((component) => (
-            <div className="metric-row" key={component.component}>
-              <span>{component.component}</span>
-              <strong>{Math.round(component.runtime_reliability * 100)}%</strong>
-            </div>
-          ))}
         </div>
       </section>
 

@@ -42,7 +42,6 @@ Human Operator
 - AI analytics: embodiment prediction, overload detection, motion-sickness risk, and teleoperation failure prediction.
 - Risk engine: unstable pipelines, hallucinated robot states, synchronization failures, unsafe control conditions, and embodiment degradation.
 - Research copilot: hypotheses, suggested experiments, statistical observations, paper-ready findings, and RAG over prior literature.
-- AI-SBOM monitor: sensor dependencies, model dependencies, synchronization chains, reliability drift, and dependency-to-embodiment correlations.
 - Explainable AI layer: every prediction includes the physiological, network, behavioral, and rendering factors that caused the state estimate.
 - Adaptive optimization loop: graphics quality, haptic intensity, network compression, and robot responsiveness adapt to preserve embodiment.
 - Dataset builder: synchronized multimodal datasets with labels for embodiment states, risk states, and task outcomes.
@@ -56,7 +55,7 @@ Human Operator
 - `GET /telemetry/latest` returns recent telemetry events.
 - `WS /ws/telemetry` streams simulated real-time telemetry for dashboard development.
 - `GET /analysis` returns relationships, averages, Pearson correlations, and risk counts.
-- Session and telemetry payloads include cognitive state, failure forecast, explainable AI factors, and AI-SBOM reliability status.
+- Session and telemetry payloads include cognitive state, failure forecast, and explainable AI factors.
 
 ## Recommended Advanced Stack
 - Frontend: React, TypeScript, TailwindCSS, Framer Motion, Three.js, D3.js, WebRTC visualization.

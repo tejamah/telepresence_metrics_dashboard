@@ -33,13 +33,28 @@ METRIC_WEIGHTS = {
     "visualization": 0.06,
 }
 
-DEPENDENCY_CHAIN = [
-    {"component": "OpenXR runtime", "type": "interface", "reliability": 0.96},
-    {"component": "ROS2 bridge", "type": "robotics", "reliability": 0.91},
-    {"component": "WebRTC media channel", "type": "streaming", "reliability": 0.88},
-    {"component": "HRV sensor driver", "type": "physiology", "reliability": 0.9},
-    {"component": "Embodiment inference model", "type": "ai_model", "reliability": 0.93},
-]
+CATEM_LAYER_METRICS = {
+    "experience": [
+        "ownership", "agency", "self_location", "presence", "social_presence",
+        "situation_awareness", "trust",
+    ],
+    "action": [
+        "task_efficiency", "task_completion_time", "error_rate", "path_efficiency",
+        "collaboration_quality", "movement_smoothness",
+    ],
+    "human_state": [
+        "workload", "heart_rate", "hrv", "galvanic_response", "cybersickness",
+        "usability", "comfort", "fatigue",
+    ],
+    "system": [
+        "latency", "jitter", "fps", "packet_loss", "tracking_dropout",
+        "calibration_error", "haptic_delay",
+    ],
+    "data_interpretation": [
+        "timestamp_accuracy", "missing_data_percent", "fusion_latency",
+        "sampling_sync", "visualization_clarity", "explanation_satisfaction",
+    ],
+}
 
 HIGHER_IS_BETTER = {
     "embodiment": True,
@@ -135,8 +150,24 @@ def _metric_score(name: str, value: float) -> float:
         return _score_negative(value, 0.5, 8)
     if name == "haptic_delay":
         return _score_negative(value, 20, 220)
+    if name == "jitter":
+        return _score_negative(value, 5, 60)
+    if name == "tracking_dropout":
+        return _score_negative(value, 0, 10)
+    if name == "calibration_error":
+        return _score_negative(value, 0.5, 8)
+    if name == "cybersickness":
+        return _score_negative(value, 5, 70)
+    if name == "fatigue":
+        return _score_negative(value, 10, 85)
+    if name == "missing_data_percent":
+        return _score_negative(value, 0, 20)
+    if name == "fusion_latency":
+        return _score_negative(value, 10, 180)
     if name == "fps":
         return min(100, max(20, (value / 90) * 100))
+    if name == "timestamp_accuracy":
+        return min(100, max(0, 100 - value * 4))
     return _score_positive(value)
 
 
@@ -178,6 +209,107 @@ def calculate_scores(metrics: dict[str, float]) -> dict[str, Any]:
         "categories": categories,
         "overall": overall,
         "overall_level": _grade(overall),
+    }
+
+
+def catem_assessment(metrics: dict[str, float]) -> dict[str, Any]:
+    layers: dict[str, dict[str, Any]] = {}
+    present_count = 0
+    expected_count = sum(len(names) for names in CATEM_LAYER_METRICS.values())
+
+    for layer, metric_names in CATEM_LAYER_METRICS.items():
+        present = [name for name in metric_names if name in metrics]
+        present_count += len(present)
+        score = round(statistics.mean(_metric_score(name, metrics[name]) for name in present), 1) if present else 0
+        layers[layer] = {
+            "score": score,
+            "level": _grade(score),
+            "coverage": round(len(present) / len(metric_names) * 100, 1),
+            "present_metrics": present,
+            "missing_metrics": [name for name in metric_names if name not in metrics],
+        }
+
+    coverage = round(present_count / expected_count * 100, 1)
+    sync_score = round(statistics.mean([
+        _metric_score("timestamp_accuracy", metrics.get("timestamp_accuracy", 8)),
+        _metric_score("missing_data_percent", metrics.get("missing_data_percent", 8)),
+        _metric_score("fusion_latency", metrics.get("fusion_latency", 90)),
+        _metric_score("sampling_sync", metrics.get("sampling_sync", 60)),
+    ]), 1)
+    evidence_quality = round(coverage * 0.55 + sync_score * 0.45, 1)
+
+    latency = metrics.get("latency", 0)
+    agency = metrics.get("agency", 100)
+    ownership = metrics.get("ownership", 100)
+    workload = metrics.get("workload", 0)
+    error_rate = metrics.get("error_rate", 0)
+    presence = metrics.get("presence", 0)
+    autonomy = metrics.get("autonomy_assistance", 0)
+    trust = metrics.get("trust", 70)
+    hrv = metrics.get("hrv", 60)
+    gsr = metrics.get("galvanic_response", 0.3)
+    social_sync = statistics.mean([
+        metrics.get("gaze_alignment", 70),
+        metrics.get("gesture_timing", 70),
+        max(0, 100 - metrics.get("conversational_latency", 150) / 4),
+    ])
+    visual_fidelity = metrics.get("avatar_fidelity", metrics.get("visual_match", 70))
+
+    propositions = [
+        {
+            "id": "P1",
+            "name": "Latency asymmetry",
+            "status": "observed" if latency > 90 and agency < ownership else "monitor",
+            "evidence": f"{latency:.0f} ms latency; agency {agency:.0f}; ownership {ownership:.0f}",
+        },
+        {
+            "id": "P2",
+            "name": "Presence–performance dissociation",
+            "status": "observed" if workload > 70 and presence >= 70 and error_rate > 8 else "monitor",
+            "evidence": f"presence {presence:.0f}; workload {workload:.0f}; errors {error_rate:.1f}%",
+        },
+        {
+            "id": "P3",
+            "name": "Assistance trade-off",
+            "status": "observed" if autonomy > 65 and agency < 65 else "insufficient" if "autonomy_assistance" not in metrics else "monitor",
+            "evidence": f"assistance {autonomy:.0f}; agency {agency:.0f}; trust {trust:.0f}",
+        },
+        {
+            "id": "P4",
+            "name": "Physiological leading indicators",
+            "status": "observed" if (hrv < 45 or gsr > 0.65) and (latency > 100 or metrics.get("jitter", 0) > 25) else "monitor",
+            "evidence": f"HRV {hrv:.0f} ms; GSR {gsr:.2f}; jitter {metrics.get('jitter', 0):.0f} ms",
+        },
+        {
+            "id": "P5",
+            "name": "Synchrony over fidelity",
+            "status": "observed" if social_sync >= visual_fidelity else "monitor",
+            "evidence": f"behavioral synchrony {social_sync:.0f}; avatar fidelity {visual_fidelity:.0f}",
+        },
+        {
+            "id": "P6",
+            "name": "Ethical adaptation",
+            "status": "supported" if metrics.get("adaptation_disclosed", 0) >= 1 and metrics.get("override_available", 0) >= 1 and trust >= 65 else "at_risk",
+            "evidence": f"disclosed {bool(metrics.get('adaptation_disclosed', 0))}; overridable {bool(metrics.get('override_available', 0))}; trust {trust:.0f}",
+        },
+    ]
+
+    return {
+        "framework": "Cross-Layer Adaptive Telepresence Evaluation Model",
+        "layers": layers,
+        "evidence_quality": {
+            "score": evidence_quality,
+            "level": _grade(evidence_quality),
+            "metric_coverage": coverage,
+            "synchronization_quality": sync_score,
+            "missing_data_percent": metrics.get("missing_data_percent"),
+        },
+        "propositions": propositions,
+        "adaptive_recommendations": [
+            "Reduce rendering complexity and protect agency." if latency > 100 else "Maintain the current rendering profile.",
+            "Prompt a workload check and preserve user override." if workload > 70 else "Continue monitoring workload.",
+            "Disclose adaptation logic before intervention." if metrics.get("adaptation_disclosed", 0) < 1 else "Adaptation disclosure is active.",
+        ],
     }
 
 
@@ -285,24 +417,6 @@ def failure_forecast(metrics: dict[str, float]) -> dict[str, Any]:
             "increase compression" if metrics.get("latency", 0) > 100 else "maintain network profile",
             "soften haptic intensity" if metrics.get("workload", 0) > 75 else "maintain haptic profile",
         ],
-    }
-
-
-def ai_sbom_status(metrics: dict[str, float]) -> dict[str, Any]:
-    instability = min(0.22, metrics.get("packet_loss", 0) * 0.015 + max(0, metrics.get("latency", 50) - 100) * 0.0008)
-    components = [
-        {
-            **component,
-            "runtime_reliability": round(max(0, component["reliability"] - instability), 3),
-            "status": "degraded" if component["reliability"] - instability < 0.82 else "nominal",
-        }
-        for component in DEPENDENCY_CHAIN
-    ]
-    degraded = [component for component in components if component["status"] == "degraded"]
-    return {
-        "components": components,
-        "dependency_risk": "elevated" if degraded else "nominal",
-        "degraded_count": len(degraded),
     }
 
 
@@ -593,6 +707,33 @@ def _seed() -> None:
                 "packet_loss": 2.1,
                 "visual_match": 54,
                 "haptic_delay": 140,
+                "self_location": 72,
+                "social_presence": 74,
+                "situation_awareness": 69,
+                "trust": 71,
+                "path_efficiency": 79,
+                "movement_smoothness": 68,
+                "galvanic_response": 0.58,
+                "cybersickness": 24,
+                "usability": 76,
+                "comfort": 70,
+                "fatigue": 41,
+                "jitter": 24,
+                "tracking_dropout": 2,
+                "calibration_error": 1.8,
+                "timestamp_accuracy": 2.1,
+                "missing_data_percent": 3.2,
+                "fusion_latency": 48,
+                "sampling_sync": 91,
+                "visualization_clarity": 84,
+                "explanation_satisfaction": 78,
+                "autonomy_assistance": 44,
+                "gaze_alignment": 82,
+                "gesture_timing": 77,
+                "conversational_latency": 168,
+                "avatar_fidelity": 66,
+                "adaptation_disclosed": 1,
+                "override_available": 1,
             },
         ),
         ExperimentSession(
@@ -618,6 +759,33 @@ def _seed() -> None:
                 "packet_loss": 1.3,
                 "visual_match": 72,
                 "haptic_delay": 58,
+                "self_location": 65,
+                "social_presence": 61,
+                "situation_awareness": 58,
+                "trust": 57,
+                "path_efficiency": 64,
+                "movement_smoothness": 60,
+                "galvanic_response": 0.72,
+                "cybersickness": 38,
+                "usability": 68,
+                "comfort": 57,
+                "fatigue": 63,
+                "jitter": 31,
+                "tracking_dropout": 4,
+                "calibration_error": 2.7,
+                "timestamp_accuracy": 3.4,
+                "missing_data_percent": 5.8,
+                "fusion_latency": 76,
+                "sampling_sync": 82,
+                "visualization_clarity": 74,
+                "explanation_satisfaction": 62,
+                "autonomy_assistance": 72,
+                "gaze_alignment": 67,
+                "gesture_timing": 62,
+                "conversational_latency": 244,
+                "avatar_fidelity": 78,
+                "adaptation_disclosed": 0,
+                "override_available": 1,
             },
         ),
     ]
@@ -640,7 +808,6 @@ def _session_response(session: StoredSession) -> dict[str, Any]:
         "cognitive_state": cognitive_state(session.metrics),
         "prediction_explanation": explain_prediction(session.metrics),
         "failure_forecast": failure_forecast(session.metrics),
-        "ai_sbom": ai_sbom_status(session.metrics),
         "embodied_consciousness": embodied_consciousness(session.metrics),
         "human_digital_twin": human_digital_twin(session.participant_id, session.metrics),
         "embodied_memory_graph": embodied_memory_graph(session.metrics),
@@ -648,6 +815,7 @@ def _session_response(session: StoredSession) -> dict[str, Any]:
         "reality_sync": reality_sync_state(session.metrics),
         "autonomous_scientist": autonomous_scientist(session.metrics),
         "post_screen_experience": post_screen_experience(session.metrics, session.participant_id),
+        "catem": catem_assessment(session.metrics),
     }
 
 
@@ -825,7 +993,6 @@ def platform_architecture() -> dict[str, Any]:
             "autonomous AI research agent",
             "digital human model",
             "live research timeline",
-            "AI-SBOM reliability monitor",
             "embodied consciousness layer",
             "human digital twin",
             "telepresence language model",
@@ -863,7 +1030,6 @@ def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
     payload["cognitive_state"] = cognitive_state(payload["metrics"])
     payload["prediction_explanation"] = explain_prediction(payload["metrics"])
     payload["failure_forecast"] = failure_forecast(payload["metrics"])
-    payload["ai_sbom"] = ai_sbom_status(payload["metrics"])
     payload["embodied_consciousness"] = embodied_consciousness(payload["metrics"])
     payload["human_digital_twin"] = human_digital_twin(payload["participant_id"], payload["metrics"])
     payload["embodied_memory_graph"] = embodied_memory_graph(payload["metrics"])
@@ -871,6 +1037,7 @@ def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
     payload["reality_sync"] = reality_sync_state(payload["metrics"])
     payload["autonomous_scientist"] = autonomous_scientist(payload["metrics"])
     payload["post_screen_experience"] = post_screen_experience(payload["metrics"], payload["participant_id"])
+    payload["catem"] = catem_assessment(payload["metrics"])
     TELEMETRY_STREAM.append(payload)
     return payload
 
@@ -943,7 +1110,6 @@ async def telemetry_socket(websocket: WebSocket) -> None:
                 "cognitive_state": cognitive_state(simulated),
                 "prediction_explanation": explain_prediction(simulated),
                 "failure_forecast": failure_forecast(simulated),
-                "ai_sbom": ai_sbom_status(simulated),
                 "embodied_consciousness": embodied_consciousness(simulated),
                 "human_digital_twin": human_digital_twin(session.participant_id, simulated),
                 "embodied_memory_graph": embodied_memory_graph(simulated),
@@ -951,6 +1117,7 @@ async def telemetry_socket(websocket: WebSocket) -> None:
                 "reality_sync": reality_sync_state(simulated),
                 "autonomous_scientist": autonomous_scientist(simulated),
                 "post_screen_experience": post_screen_experience(simulated, session.participant_id),
+                "catem": catem_assessment(simulated),
             }
             TELEMETRY_STREAM.append(event)
             await websocket.send_json(event)

@@ -25,7 +25,6 @@ The V1 goal is not to build every future idea. The goal is to build believable f
 - FastAPI platform API.
 - WebSocket telemetry stream.
 - PostgreSQL schema.
-- AI-SBOM reliability model.
 - Synchronization and memory graph contracts.
 
 ### Layer 4: Ecosystem Layer

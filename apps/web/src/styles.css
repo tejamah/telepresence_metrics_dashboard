@@ -751,6 +751,90 @@ button {
   grid-column: span 12;
 }
 
+.catem-overview,
+.catem-propositions,
+.catem-recommendations {
+  grid-column: span 12;
+}
+
+.catem-overview {
+  border-color: rgba(255, 184, 77, 0.34);
+  background:
+    linear-gradient(135deg, rgba(255, 184, 77, 0.1), rgba(94, 234, 212, 0.06)),
+    rgba(11, 16, 22, 0.78);
+}
+
+.catem-layer-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.evidence-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.proposition-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.proposition-card {
+  border: 1px solid rgba(136, 227, 222, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 14px;
+}
+
+.proposition-card > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.proposition-card > div > strong {
+  color: #ffcf74;
+}
+
+.proposition-card h3 {
+  margin: 12px 0 7px;
+  color: #f7fffb;
+  font-size: 1rem;
+}
+
+.proposition-card p {
+  margin: 0;
+  color: #9fc5c1;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.proposition-card span {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #d8efeb;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  text-transform: uppercase;
+}
+
+.proposition-card span.observed,
+.proposition-card span.supported {
+  background: rgba(94, 234, 212, 0.14);
+  color: #5eead4;
+}
+
+.proposition-card span.at_risk {
+  background: rgba(255, 107, 74, 0.16);
+  color: #ff9b83;
+}
+
 .simulator-panel {
   grid-column: span 12;
   border-color: rgba(94, 234, 212, 0.34);
@@ -948,11 +1032,19 @@ td,
   .simulator-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .catem-layer-grid,
+  .proposition-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 640px) {
   .stream-grid,
-  .simulator-grid {
+  .simulator-grid,
+  .catem-layer-grid,
+  .proposition-grid,
+  .evidence-strip {
     grid-template-columns: 1fr;
   }
 }

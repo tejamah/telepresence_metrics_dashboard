@@ -2,9 +2,6 @@
 
 ## Paper Tracks
 
-### AI-SBOM For Embodied Systems
-Study how sensor dependencies, model dependencies, and synchronization chains propagate risk into embodiment degradation.
-
 ### Embodiment Prediction Models
 Predict agency, ownership, presence, and immersion collapse from multimodal telemetry.
 

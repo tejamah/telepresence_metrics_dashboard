@@ -47,20 +47,6 @@ export interface ExplanationFactor {
   detail: string
 }
 
-export interface AiSbomComponent {
-  component: string
-  type: string
-  reliability: number
-  runtime_reliability: number
-  status: string
-}
-
-export interface AiSbom {
-  components: AiSbomComponent[]
-  dependency_risk: string
-  degraded_count: number
-}
-
 export interface EmbodiedConsciousness {
   awareness: number
   attention: number
@@ -154,6 +140,33 @@ export interface PostScreenExperience {
   }
 }
 
+export interface CatemLayer {
+  score: number
+  level: Level
+  coverage: number
+  present_metrics: string[]
+  missing_metrics: string[]
+}
+
+export interface CatemAssessment {
+  framework: string
+  layers: Record<string, CatemLayer>
+  evidence_quality: {
+    score: number
+    level: Level
+    metric_coverage: number
+    synchronization_quality: number
+    missing_data_percent: number | null
+  }
+  propositions: Array<{
+    id: string
+    name: string
+    status: string
+    evidence: string
+  }>
+  adaptive_recommendations: string[]
+}
+
 export interface ExperimentSession {
   id: number
   participant_id: string
@@ -168,7 +181,6 @@ export interface ExperimentSession {
   cognitive_state: CognitiveState
   prediction_explanation: ExplanationFactor[]
   failure_forecast: FailureForecast
-  ai_sbom: AiSbom
   embodied_consciousness: EmbodiedConsciousness
   human_digital_twin: HumanDigitalTwin
   embodied_memory_graph: EmbodiedMemoryGraph
@@ -176,6 +188,7 @@ export interface ExperimentSession {
   reality_sync: RealitySyncState
   autonomous_scientist: AutonomousScientist
   post_screen_experience: PostScreenExperience
+  catem: CatemAssessment
 }
 
 export interface AnalyticsPayload {
@@ -227,7 +240,6 @@ export interface TelemetryEvent {
   cognitive_state: CognitiveState
   prediction_explanation: ExplanationFactor[]
   failure_forecast: FailureForecast
-  ai_sbom: AiSbom
   embodied_consciousness: EmbodiedConsciousness
   human_digital_twin: HumanDigitalTwin
   embodied_memory_graph: EmbodiedMemoryGraph
@@ -235,5 +247,6 @@ export interface TelemetryEvent {
   reality_sync: RealitySyncState
   autonomous_scientist: AutonomousScientist
   post_screen_experience: PostScreenExperience
+  catem: CatemAssessment
   simulator_state?: SimulatorState
 }
