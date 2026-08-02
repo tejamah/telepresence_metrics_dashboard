@@ -150,13 +150,14 @@ export interface CatemLayer {
 
 export interface CatemAssessment {
   framework: string
+  framework_version: string
   layers: Record<string, CatemLayer>
-  evidence_quality: {
-    score: number
-    level: Level
-    metric_coverage: number
+  evidence_profile: {
+    field_coverage: number
     synchronization_quality: number
-    missing_data_percent: number | null
+    missing_data_burden: number | null
+    provenance_completeness: number | null
+    reliability_evidence: number | null
   }
   propositions: Array<{
     id: string
@@ -194,7 +195,7 @@ export interface ExperimentSession {
 export interface AnalyticsPayload {
   relationships: Array<{ label: string; status: string }>
   averages: MetricMap
-  correlations: Array<{ x: string; y: string; pearson_r: number | null; n: number }>
+  correlations: Array<{ x: string; y: string; pearson_r: number | null; n: number; status: string }>
   risk_counts: Record<string, number>
 }
 
@@ -202,6 +203,42 @@ export interface MetricsPayload {
   latest: ExperimentSession
   sessions: ExperimentSession[]
   analytics: AnalyticsPayload
+}
+
+export interface EventWindowRecord {
+  metric: string
+  construct: string
+  layer: string
+  raw_value: number
+  unit: string
+  offset_seconds: number
+  event_id: string
+  missing: boolean
+  source: string
+  provenance: string
+  transform_version: string
+  interpretation_boundary: string
+}
+
+export interface EventWindowSample {
+  offset_seconds: number
+  metrics: MetricMap
+}
+
+export interface EventWindow {
+  event_id: string
+  participant_id: string
+  task_type: string
+  event_name: string
+  reference_time_seconds: number
+  window_seconds: [number, number]
+  synthetic: boolean
+  software_version: string
+  catem_version: string
+  api_schema_version: string
+  samples: EventWindowSample[]
+  records: EventWindowRecord[]
+  interpretation_boundary: string
 }
 
 export interface PlatformArchitecture {

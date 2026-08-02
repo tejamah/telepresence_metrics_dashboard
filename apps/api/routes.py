@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import copy
 import csv
 import io
 import math
+import platform
 import statistics
 import sys
 from dataclasses import dataclass, field
@@ -22,6 +24,92 @@ from services.telemetry import TelemetrySimulator
 
 router = APIRouter()
 
+SOFTWARE_VERSION = "0.2.0"
+CATEM_VERSION = "catem-0.2"
+API_SCHEMA_VERSION = "2026-07"
+
+OBJECT_DROP_EVENT = {
+    "event_id": "object-drop-001",
+    "participant_id": "SYNTH-EVENT-001",
+    "task_type": "Remote object transfer",
+    "event_name": "Robot object drop",
+    "reference_time_seconds": 0,
+    "window_seconds": [-2, 2],
+    "synthetic": True,
+    "samples": [
+        {
+            "offset_seconds": -2,
+            "metrics": {
+                "latency": 96.0,
+                "packet_loss": 1.2,
+                "tracking_dropout": 2.0,
+                "workload": 58.0,
+                "heart_rate": 88.0,
+                "agency": 78.0,
+                "task_error": 0.0,
+            },
+        },
+        {
+            "offset_seconds": -1,
+            "metrics": {
+                "latency": 118.0,
+                "packet_loss": 2.4,
+                "tracking_dropout": 3.0,
+                "workload": 64.0,
+                "heart_rate": 96.0,
+                "agency": 72.0,
+                "task_error": 0.0,
+            },
+        },
+        {
+            "offset_seconds": 0,
+            "metrics": {
+                "latency": 220.0,
+                "packet_loss": 12.0,
+                "tracking_dropout": 15.0,
+                "workload": 82.0,
+                "heart_rate": 112.0,
+                "agency": 58.0,
+                "task_error": 1.0,
+            },
+        },
+        {
+            "offset_seconds": 1,
+            "metrics": {
+                "latency": 154.0,
+                "packet_loss": 5.1,
+                "tracking_dropout": 8.0,
+                "workload": 72.0,
+                "heart_rate": 104.0,
+                "agency": 64.0,
+                "task_error": 0.0,
+            },
+        },
+        {
+            "offset_seconds": 2,
+            "metrics": {
+                "latency": 108.0,
+                "packet_loss": 1.9,
+                "tracking_dropout": 3.0,
+                "workload": 62.0,
+                "heart_rate": 93.0,
+                "agency": 72.0,
+                "task_error": 0.0,
+            },
+        },
+    ],
+}
+
+EVENT_METRIC_METADATA = {
+    "agency": {"layer": "experience", "unit": "instrument_defined", "source": "interface_agency_fixture"},
+    "task_error": {"layer": "action", "unit": "binary", "source": "robot_task_log_fixture"},
+    "workload": {"layer": "human_state", "unit": "%", "source": "workload_instrument_fixture"},
+    "heart_rate": {"layer": "human_state", "unit": "bpm", "source": "physiology_sensor_fixture"},
+    "latency": {"layer": "system", "unit": "ms", "source": "network_telemetry_fixture"},
+    "packet_loss": {"layer": "system", "unit": "%", "source": "network_telemetry_fixture"},
+    "tracking_dropout": {"layer": "system", "unit": "%", "source": "tracking_telemetry_fixture"},
+}
+
 
 METRIC_WEIGHTS = {
     "embodiment": 0.2,
@@ -36,15 +124,15 @@ METRIC_WEIGHTS = {
 CATEM_LAYER_METRICS = {
     "experience": [
         "ownership", "agency", "self_location", "presence", "social_presence",
-        "situation_awareness", "trust",
+        "trust", "usability",
     ],
     "action": [
         "task_efficiency", "task_completion_time", "error_rate", "path_efficiency",
         "collaboration_quality", "movement_smoothness",
     ],
     "human_state": [
-        "workload", "heart_rate", "hrv", "galvanic_response", "cybersickness",
-        "usability", "comfort", "fatigue",
+        "workload", "situation_awareness", "heart_rate", "hrv", "galvanic_response",
+        "cybersickness", "comfort", "fatigue",
     ],
     "system": [
         "latency", "jitter", "fps", "packet_loss", "tracking_dropout",
@@ -54,6 +142,102 @@ CATEM_LAYER_METRICS = {
         "timestamp_accuracy", "missing_data_percent", "fusion_latency",
         "sampling_sync", "visualization_clarity", "explanation_satisfaction",
     ],
+}
+
+METRIC_UNITS = {
+    "task_completion_time": "s",
+    "error_rate": "%",
+    "workload": "%",
+    "heart_rate": "bpm",
+    "hrv": "ms",
+    "galvanic_response": "normalized",
+    "cybersickness": "instrument_score",
+    "latency": "ms",
+    "jitter": "ms",
+    "fps": "frames_per_second",
+    "packet_loss": "%",
+    "tracking_dropout": "%",
+    "calibration_error": "platform_defined",
+    "haptic_delay": "ms",
+    "timestamp_accuracy": "ms_error",
+    "missing_data_percent": "%",
+    "fusion_latency": "ms",
+    "conversational_latency": "ms",
+}
+
+METRIC_DIRECTIONS = {
+    "task_completion_time": "lower_is_better",
+    "error_rate": "lower_is_better",
+    "safety_events": "lower_is_better",
+    "workload": "instrument_dependent",
+    "heart_rate": "context_dependent",
+    "hrv": "context_dependent",
+    "galvanic_response": "context_dependent",
+    "cybersickness": "lower_is_better",
+    "fatigue": "lower_is_better",
+    "latency": "lower_is_better",
+    "jitter": "lower_is_better",
+    "fps": "higher_is_better",
+    "packet_loss": "lower_is_better",
+    "tracking_dropout": "lower_is_better",
+    "calibration_error": "lower_is_better",
+    "haptic_delay": "lower_is_better",
+    "timestamp_accuracy": "lower_error_is_better",
+    "missing_data_percent": "lower_is_better",
+    "fusion_latency": "lower_is_better",
+}
+
+METRIC_VALID_RANGES = {
+    "error_rate": [0, 100],
+    "workload": [0, 100],
+    "heart_rate": [20, 240],
+    "hrv": [0, 250],
+    "galvanic_response": [0, 1],
+    "latency": [0, None],
+    "jitter": [0, None],
+    "fps": [0, None],
+    "packet_loss": [0, 100],
+    "tracking_dropout": [0, 100],
+    "missing_data_percent": [0, 100],
+}
+
+# Every non-default transform is registered explicitly. Parameters remain
+# prototype settings unless an instrument-specific scoring procedure is cited.
+METRIC_TRANSFORMS: dict[str, dict[str, Any]] = {
+    "task_completion_time": {"type": "negative_piecewise", "low": 45, "high": 240},
+    "error_rate": {"type": "negative_piecewise", "low": 2, "high": 25},
+    "safety_events": {"type": "negative_piecewise", "low": 0, "high": 6},
+    "heart_rate": {"type": "negative_piecewise", "low": 70, "high": 120},
+    "latency": {"type": "negative_piecewise", "low": 30, "high": 180},
+    "packet_loss": {"type": "negative_piecewise", "low": 0.5, "high": 8},
+    "haptic_delay": {"type": "negative_piecewise", "low": 20, "high": 220},
+    "jitter": {"type": "negative_piecewise", "low": 5, "high": 60},
+    "tracking_dropout": {"type": "negative_piecewise", "low": 0, "high": 10},
+    "calibration_error": {"type": "negative_piecewise", "low": 0.5, "high": 8},
+    "cybersickness": {"type": "negative_piecewise", "low": 5, "high": 70},
+    "fatigue": {"type": "negative_piecewise", "low": 10, "high": 85},
+    "missing_data_percent": {"type": "negative_piecewise", "low": 0, "high": 20},
+    "fusion_latency": {"type": "negative_piecewise", "low": 10, "high": 180},
+    "fps": {"type": "ratio_clamped", "reference": 90, "minimum": 20, "maximum": 100},
+    "timestamp_accuracy": {"type": "linear_penalty", "intercept": 100, "slope": 4},
+}
+
+DEFAULT_METRIC_TRANSFORM = {
+    "type": "positive_piecewise",
+    "low": 45,
+    "high": 75,
+    "threshold_source": "prototype_setting",
+}
+for _transform in METRIC_TRANSFORMS.values():
+    _transform["threshold_source"] = "prototype_setting"
+
+LAYER_INTERPRETATION_BOUNDARIES = {
+    "experience": "Experience measures do not establish task success, safety, or physiological stability.",
+    "action": "Task outcomes remain task- and assistance-specific and do not establish agency or trust.",
+    "human_state": "Human-state and cognition indicators require instrument definitions, baselines, artifact control, and context.",
+    "system": "System-condition measures require end-to-end definitions and time alignment with human outcomes.",
+    "data_interpretation": "Data and interpretation conditions do not establish construct validity or truth of an inference.",
+    "unassigned": "The metric is preserved but requires an explicit construct and layer assignment.",
 }
 
 HIGHER_IS_BETTER = {
@@ -136,39 +320,18 @@ def _score_negative(value: float, low: float, high: float) -> float:
 
 
 def _metric_score(name: str, value: float) -> float:
-    if name == "task_completion_time":
-        return _score_negative(value, 45, 240)
-    if name == "error_rate":
-        return _score_negative(value, 2, 25)
-    if name == "safety_events":
-        return _score_negative(value, 0, 6)
-    if name == "heart_rate":
-        return _score_negative(value, 70, 120)
-    if name == "latency":
-        return _score_negative(value, 30, 180)
-    if name == "packet_loss":
-        return _score_negative(value, 0.5, 8)
-    if name == "haptic_delay":
-        return _score_negative(value, 20, 220)
-    if name == "jitter":
-        return _score_negative(value, 5, 60)
-    if name == "tracking_dropout":
-        return _score_negative(value, 0, 10)
-    if name == "calibration_error":
-        return _score_negative(value, 0.5, 8)
-    if name == "cybersickness":
-        return _score_negative(value, 5, 70)
-    if name == "fatigue":
-        return _score_negative(value, 10, 85)
-    if name == "missing_data_percent":
-        return _score_negative(value, 0, 20)
-    if name == "fusion_latency":
-        return _score_negative(value, 10, 180)
-    if name == "fps":
-        return min(100, max(20, (value / 90) * 100))
-    if name == "timestamp_accuracy":
-        return min(100, max(0, 100 - value * 4))
-    return _score_positive(value)
+    transform = METRIC_TRANSFORMS.get(name, DEFAULT_METRIC_TRANSFORM)
+    transform_type = transform["type"]
+    if transform_type == "negative_piecewise":
+        return _score_negative(value, transform["low"], transform["high"])
+    if transform_type == "ratio_clamped":
+        return min(
+            transform["maximum"],
+            max(transform["minimum"], (value / transform["reference"]) * 100),
+        )
+    if transform_type == "linear_penalty":
+        return min(100, max(0, transform["intercept"] - value * transform["slope"]))
+    return _score_positive(value, transform["low"], transform["high"])
 
 
 def _grade(score: float) -> str:
@@ -177,6 +340,55 @@ def _grade(score: float) -> str:
     if score >= 50:
         return "medium"
     return "low"
+
+
+def _metric_layer(name: str) -> str:
+    for layer, metric_names in CATEM_LAYER_METRICS.items():
+        if name in metric_names:
+            return layer
+    return "unassigned"
+
+
+def measurement_contract(
+    metrics: dict[str, float],
+    *,
+    timestamp: str | None,
+    source: str,
+) -> list[dict[str, Any]]:
+    """Return an inspectable record for every expected or supplied metric.
+
+    Records preserve raw values and missingness. Instrument-specific sampling,
+    preprocessing, and reliability evidence remain explicitly unreported until
+    supplied by an acquisition adapter or study protocol.
+    """
+    expected = {name for names in CATEM_LAYER_METRICS.values() for name in names}
+    names = sorted(expected | set(metrics))
+    records: list[dict[str, Any]] = []
+    for name in names:
+        layer = _metric_layer(name)
+        missing = name not in metrics or metrics.get(name) is None
+        records.append(
+            {
+                "metric": name,
+                "construct": name.replace("_", " "),
+                "layer": layer,
+                "raw_value": None if missing else metrics[name],
+                "unit": METRIC_UNITS.get(name, "instrument_defined"),
+                "direction": METRIC_DIRECTIONS.get(name, "higher_is_better"),
+                "instrument_or_sensor": "not_reported",
+                "timestamp": timestamp,
+                "sampling_rate_hz": None,
+                "valid_range": METRIC_VALID_RANGES.get(name),
+                "missing": missing,
+                "missingness_status": "missing" if missing else "observed",
+                "preprocessing": "none_declared",
+                "source": source,
+                "provenance": f"{source}:raw_metric",
+                "transform_version": CATEM_VERSION,
+                "interpretation_boundary": LAYER_INTERPRETATION_BOUNDARIES[layer],
+            }
+        )
+    return records
 
 
 def calculate_scores(metrics: dict[str, float]) -> dict[str, Any]:
@@ -236,7 +448,13 @@ def catem_assessment(metrics: dict[str, float]) -> dict[str, Any]:
         _metric_score("fusion_latency", metrics.get("fusion_latency", 90)),
         _metric_score("sampling_sync", metrics.get("sampling_sync", 60)),
     ]), 1)
-    evidence_quality = round(coverage * 0.55 + sync_score * 0.45, 1)
+    evidence_profile = {
+        "field_coverage": coverage,
+        "synchronization_quality": sync_score,
+        "missing_data_burden": metrics.get("missing_data_percent"),
+        "provenance_completeness": None,
+        "reliability_evidence": None,
+    }
 
     latency = metrics.get("latency", 0)
     agency = metrics.get("agency", 100)
@@ -296,14 +514,9 @@ def catem_assessment(metrics: dict[str, float]) -> dict[str, Any]:
 
     return {
         "framework": "Cross-Layer Adaptive Telepresence Evaluation Model",
+        "framework_version": CATEM_VERSION,
         "layers": layers,
-        "evidence_quality": {
-            "score": evidence_quality,
-            "level": _grade(evidence_quality),
-            "metric_coverage": coverage,
-            "synchronization_quality": sync_score,
-            "missing_data_percent": metrics.get("missing_data_percent"),
-        },
+        "evidence_profile": evidence_profile,
         "propositions": propositions,
         "adaptive_recommendations": [
             "Reduce rendering complexity and protect agency." if latency > 100 else "Maintain the current rendering profile.",
@@ -311,6 +524,48 @@ def catem_assessment(metrics: dict[str, float]) -> dict[str, Any]:
             "Disclose adaptation logic before intervention." if metrics.get("adaptation_disclosed", 0) < 1 else "Adaptation disclosure is active.",
         ],
     }
+
+
+def object_drop_event_window() -> dict[str, Any]:
+    """Return the canonical, traceable five-sample event fixture used in the papers."""
+    payload = copy.deepcopy(OBJECT_DROP_EVENT)
+    records: list[dict[str, Any]] = []
+    for sample in payload["samples"]:
+        offset = sample["offset_seconds"]
+        for metric, value in sample["metrics"].items():
+            metadata = EVENT_METRIC_METADATA[metric]
+            records.append(
+                {
+                    "metric": metric,
+                    "construct": metric.replace("_", " "),
+                    "layer": metadata["layer"],
+                    "raw_value": value,
+                    "unit": metadata["unit"],
+                    "offset_seconds": offset,
+                    "event_id": payload["event_id"],
+                    "missing": False,
+                    "source": metadata["source"],
+                    "provenance": "authored deterministic software-test fixture",
+                    "transform_version": SOFTWARE_VERSION,
+                    "interpretation_boundary": (
+                        "Synthetic event-window value for interface and alignment verification; "
+                        "not a participant observation or causal estimate."
+                    ),
+                }
+            )
+    payload.update(
+        {
+            "software_version": SOFTWARE_VERSION,
+            "catem_version": CATEM_VERSION,
+            "api_schema_version": API_SCHEMA_VERSION,
+            "records": records,
+            "interpretation_boundary": (
+                "The five samples are deterministic authored values for software verification. "
+                "Temporal co-occurrence does not establish causality."
+            ),
+        }
+    )
+    return payload
 
 
 def generate_insight(session: StoredSession) -> str:
@@ -331,7 +586,7 @@ def generate_insight(session: StoredSession) -> str:
     if not clauses:
         clauses.append("the session shows balanced telepresence quality with no dominant risk signal")
 
-    return f"Participant {session.participant_id} showed {', and '.join(clauses)}."
+    return f"Session {session.participant_id} showed {', and '.join(clauses)}."
 
 
 def detect_risks(metrics: dict[str, float]) -> list[dict[str, Any]]:
@@ -795,6 +1050,8 @@ def _seed() -> None:
 
 def _session_response(session: StoredSession) -> dict[str, Any]:
     return {
+        "software_version": SOFTWARE_VERSION,
+        "api_schema_version": API_SCHEMA_VERSION,
         "id": session.id,
         "participant_id": session.participant_id,
         "task_type": session.task_type,
@@ -816,6 +1073,11 @@ def _session_response(session: StoredSession) -> dict[str, Any]:
         "autonomous_scientist": autonomous_scientist(session.metrics),
         "post_screen_experience": post_screen_experience(session.metrics, session.participant_id),
         "catem": catem_assessment(session.metrics),
+        "measurement_records": measurement_contract(
+            session.metrics,
+            timestamp=session.session_time,
+            source="stored_session",
+        ),
     }
 
 
@@ -839,14 +1101,21 @@ def _correlation_pair(x_key: str, y_key: str) -> dict[str, Any]:
         for session in SESSIONS
         if x_key in session.metrics and y_key in session.metrics
     ]
-    if not pairs:
-        return {"x": x_key, "y": y_key, "pearson_r": None, "n": 0}
+    if len(pairs) < 3:
+        return {
+            "x": x_key,
+            "y": y_key,
+            "pearson_r": None,
+            "n": len(pairs),
+            "status": "insufficient_sample",
+        }
     x_values, y_values = zip(*pairs)
     return {
         "x": x_key,
         "y": y_key,
         "pearson_r": _pearson(list(x_values), list(y_values)),
         "n": len(pairs),
+        "status": "descriptive_only",
     }
 
 
@@ -966,6 +1235,23 @@ def analysis() -> dict[str, Any]:
 def platform_architecture() -> dict[str, Any]:
     return {
         "name": "Embodied AI Research Operating Platform",
+        "software_version": SOFTWARE_VERSION,
+        "catem_version": CATEM_VERSION,
+        "api_schema_version": API_SCHEMA_VERSION,
+        "runtime": {
+            "python": platform.python_version(),
+            "implementation": platform.python_implementation(),
+            "operating_system": platform.system(),
+        },
+        "storage": {
+            "mode": "in_memory_prototype",
+            "durable": False,
+        },
+        "security_assumptions": [
+            "local trusted research network",
+            "no authentication or authorization in the prototype",
+            "no sensitive human-subject data without an approved deployment layer",
+        ],
         "pipeline": [
             "human operator",
             "VR/AR/robot interface",
@@ -1025,6 +1311,8 @@ def platform_architecture() -> dict[str, Any]:
 def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
     payload = event.dict()
     payload["timestamp"] = payload["timestamp"] or datetime.utcnow().isoformat(timespec="milliseconds")
+    payload["software_version"] = SOFTWARE_VERSION
+    payload["api_schema_version"] = API_SCHEMA_VERSION
     payload["risk_events"] = detect_risks(payload["metrics"])
     payload["embodiment_prediction"] = predict_embodiment_state(payload["metrics"])
     payload["cognitive_state"] = cognitive_state(payload["metrics"])
@@ -1038,6 +1326,11 @@ def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
     payload["autonomous_scientist"] = autonomous_scientist(payload["metrics"])
     payload["post_screen_experience"] = post_screen_experience(payload["metrics"], payload["participant_id"])
     payload["catem"] = catem_assessment(payload["metrics"])
+    payload["measurement_records"] = measurement_contract(
+        payload["metrics"],
+        timestamp=payload["timestamp"],
+        source=payload["source"],
+    )
     TELEMETRY_STREAM.append(payload)
     return payload
 
@@ -1052,6 +1345,11 @@ def research_scientist() -> dict[str, Any]:
     _seed()
     latest = SESSIONS[-1]
     return autonomous_scientist(latest.metrics)
+
+
+@router.get("/events/object-drop")
+def object_drop_event() -> dict[str, Any]:
+    return object_drop_event_window()
 
 
 @router.get("/simulation/scenarios")
@@ -1100,6 +1398,8 @@ async def telemetry_socket(websocket: WebSocket) -> None:
             session = SESSIONS[tick % len(SESSIONS)]
             simulated, simulator_state = SIMULATOR.simulate(session.metrics, tick)
             event = {
+                "software_version": SOFTWARE_VERSION,
+                "api_schema_version": API_SCHEMA_VERSION,
                 "timestamp": datetime.utcnow().isoformat(timespec="milliseconds"),
                 "participant_id": session.participant_id,
                 "source": "real_telemetry_simulator",
@@ -1119,6 +1419,11 @@ async def telemetry_socket(websocket: WebSocket) -> None:
                 "post_screen_experience": post_screen_experience(simulated, session.participant_id),
                 "catem": catem_assessment(simulated),
             }
+            event["measurement_records"] = measurement_contract(
+                simulated,
+                timestamp=event["timestamp"],
+                source=event["source"],
+            )
             TELEMETRY_STREAM.append(event)
             await websocket.send_json(event)
             tick += 1

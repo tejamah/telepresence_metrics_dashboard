@@ -17,6 +17,7 @@ and publishable multimodal analytics.
 - Metrics collection
 - CSV upload
 - Dashboard scorecards and comparison tables
+- Traceable five-sample object-drop event window
 - AI-style performance summaries
 - Telepresence scoring system
 - Real telemetry simulator for hardware-free live demos
@@ -99,6 +100,21 @@ packages/
 - `GET /simulation/telemetry-profile` returns simulator phases and signal generators.
 - `GET /simulation/telemetry-preview` returns a short generated telemetry sequence.
 - `GET /analysis` returns averages, relationships, correlations, and risk counts.
+- `GET /events/object-drop` returns the canonical (reference) event fixture: five samples at
+  offsets `-2`, `-1`, `0`, `+1`, and `+2` seconds, 35 traceable source records, and the
+  software, CATEM, and API-schema versions used to produce them.
 
 See `docs/advanced_platform.md` for the PhD/research-grade architecture and ultimate research vision.
 See `docs/TELEMETRY_SIMULATOR.md` for the physiological, network, embodiment degradation, and stress escalation simulator.
+
+## CATEM Reproducibility
+
+Reviewer-facing CATEM materials are indexed in
+[`docs/CATEM_REPRODUCIBILITY.md`](docs/CATEM_REPRODUCIBILITY.md). The index
+links directly to the dashboard screenshot, sample CSV, canonical event fixture,
+measurement and response schemas, verification results, and exact run commands.
+
+## License and Citation
+
+This project is open source under the [MIT License](LICENSE). Machine-readable
+citation metadata for CATEM version 0.2.0 are provided in [CITATION.cff](CITATION.cff).

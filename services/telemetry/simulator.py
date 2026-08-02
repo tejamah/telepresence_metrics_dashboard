@@ -138,7 +138,7 @@ class TelemetrySimulator:
             pressure = (cycle - 24) / 12
             return SimulatorPhase("stress_escalation", stress_pressure=0.52 + pressure * 0.36, network_pressure=0.55, recovery_pressure=0.0)
         pressure = (cycle - 36) / 12
-        return SimulatorPhase("adaptive_recovery", stress_pressure=0.45 - pressure * 0.28, network_pressure=0.4 - pressure * 0.26, recovery_pressure=0.35 + pressure * 0.45)
+        return SimulatorPhase("rule_based_recovery", stress_pressure=0.45 - pressure * 0.28, network_pressure=0.4 - pressure * 0.26, recovery_pressure=0.35 + pressure * 0.45)
 
     def simulate(self, base: dict[str, float], tick: int) -> tuple[dict[str, float], dict[str, Any]]:
         phase = self.phase_for_tick(tick)
@@ -209,7 +209,7 @@ class TelemetrySimulator:
                 "baseline_alignment",
                 "network_degradation",
                 "stress_escalation",
-                "adaptive_recovery",
+                "rule_based_recovery",
             ],
             "simulators": {
                 "physiological": ["heart_rate", "hrv", "respiration_rate", "galvanic_response"],

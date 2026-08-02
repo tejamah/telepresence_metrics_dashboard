@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import type {
   AnalyticsPayload,
+  EventWindow,
   ExperimentSession,
   PlatformArchitecture,
   TelemetryEvent,
@@ -19,9 +20,9 @@ const metricLabels: Record<string, string> = {
 const catemLayerLabels: Record<string, string> = {
   experience: 'Experience',
   action: 'Action',
-  human_state: 'Human state',
-  system: 'System',
-  data_interpretation: 'Data & interpretation',
+  human_state: 'Human state & cognition',
+  system: 'System conditions',
+  data_interpretation: 'Data & interpretation conditions',
 }
 
 const rawMetrics = [
@@ -47,9 +48,11 @@ interface ScoreBarProps {
   label: string
   score: number
   level: string
+  coverage?: number
+  missingMetrics?: string[]
 }
 
-function ScoreBar({ label, score, level }: ScoreBarProps) {
+function ScoreBar({ label, score, level, coverage, missingMetrics = [] }: ScoreBarProps) {
   return (
     <article className="score-card">
       <div className="score-card__heading">
@@ -59,7 +62,13 @@ function ScoreBar({ label, score, level }: ScoreBarProps) {
       <div className="bar-track" aria-label={`${label} score ${score}`}>
         <div className={`bar-fill ${level}`} style={{ width: `${Math.min(score, 100)}%` }} />
       </div>
-      <small>{level}</small>
+      <small>
+        {level}
+        {coverage !== undefined ? ` · ${coverage}% coverage` : ''}
+      </small>
+      {missingMetrics.length > 0 && (
+        <p className="missing-metrics">Missing: {missingMetrics.join(', ')}</p>
+      )}
     </article>
   )
 }
@@ -97,6 +106,7 @@ interface DashboardProps {
   telemetry: TelemetryEvent | null
   telemetryHistory: TelemetryEvent[]
   streamState: 'connecting' | 'live' | 'offline'
+  eventWindow: EventWindow | null
 }
 
 function SignalStrip({ label, values, unit }: { label: string; values: number[]; unit: string }) {
@@ -140,12 +150,88 @@ function LiveTimeline({ history }: { history: TelemetryEvent[] }) {
   )
 }
 
-function Dashboard({ latest, sessions, analytics, architecture, telemetry, telemetryHistory, streamState }: DashboardProps) {
+const eventMetricRows = [
+  ['agency', 'Experience', 'Agency'],
+  ['task_error', 'Action', 'Task error'],
+  ['workload', 'Human state', 'Workload'],
+  ['heart_rate', 'Human state', 'Heart rate'],
+  ['latency', 'System', 'Latency'],
+  ['packet_loss', 'System', 'Packet loss'],
+  ['tracking_dropout', 'System', 'Tracking dropout'],
+] as const
+
+function EventWindowPanel({ eventWindow }: { eventWindow: EventWindow }) {
+  return (
+    <section id="object-drop-window" className="panel event-window-panel">
+      <div className="panel-heading">
+        <div>
+          <p className="eyebrow">Selected evidence window</p>
+          <h2>{eventWindow.event_name}</h2>
+        </div>
+        <span>
+          {eventWindow.window_seconds[0]}s to +{eventWindow.window_seconds[1]}s · synthetic fixture
+        </span>
+      </div>
+      <div className="event-table-wrap">
+        <table className="event-window-table">
+          <thead>
+            <tr>
+              <th>Layer / measure</th>
+              {eventWindow.samples.map((sample) => (
+                <th className={sample.offset_seconds === 0 ? 'event-moment' : ''} key={sample.offset_seconds}>
+                  {sample.offset_seconds > 0 ? '+' : ''}{sample.offset_seconds}s
+                </th>
+              ))}
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            {eventMetricRows.map(([metric, layer, label]) => {
+              const record = eventWindow.records.find((item) => item.metric === metric)
+              return (
+                <tr key={metric}>
+                  <td>
+                    <span>{layer}</span>
+                    <strong>{label}</strong>
+                  </td>
+                  {eventWindow.samples.map((sample) => (
+                    <td className={sample.offset_seconds === 0 ? 'event-moment' : ''} key={sample.offset_seconds}>
+                      {sample.metrics[metric]}
+                      {record?.unit && record.unit !== 'instrument_defined' && record.unit !== 'binary'
+                        ? ` ${record.unit}`
+                        : ''}
+                    </td>
+                  ))}
+                  <td><code>{record?.source || 'unreported'}</code></td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="interpretation-boundary">{eventWindow.interpretation_boundary}</p>
+    </section>
+  )
+}
+
+function Dashboard({
+  latest,
+  sessions,
+  analytics,
+  architecture,
+  telemetry,
+  telemetryHistory,
+  streamState,
+  eventWindow,
+}: DashboardProps) {
   if (!latest) {
     return <div className="loading">No sessions available yet.</div>
   }
 
-  const categories = latest.scores.categories
+  const activeSession = telemetry
+    ? sessions.find((session) => session.participant_id === telemetry.participant_id) || latest
+    : latest
+  const categories = activeSession.scores.categories
   const liveMetrics = telemetry?.metrics || latest.metrics
   const liveRisks = telemetry?.risk_events || latest.risk_events || []
   const livePrediction = telemetry?.embodiment_prediction || latest.embodiment_prediction
@@ -160,6 +246,10 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
   const scientist = telemetry?.autonomous_scientist || latest.autonomous_scientist
   const presence = telemetry?.post_screen_experience || latest.post_screen_experience
   const catem = telemetry?.catem || latest.catem
+  const observationalLayers = Object.entries(catem?.layers || {}).filter(
+    ([key]) => key !== 'data_interpretation',
+  )
+  const interpretationConditions = catem?.layers?.data_interpretation
   const simulatorState = telemetry?.simulator_state
   const signalHistory = telemetryHistory.length ? telemetryHistory : telemetry ? [telemetry] : []
   const latencySeries = signalHistory.map((event) => event.metrics.latency ?? 0)
@@ -172,9 +262,9 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
       <section className="summary-panel">
         <div>
           <p className="eyebrow">Mission control / <span className={`stream-dot ${streamState}`}>{streamState}</span></p>
-          <h2>{latest.participant_id}</h2>
-          <p>{latest.task_type}</p>
-          <p>{latest.setup}</p>
+          <h2>{activeSession.participant_id}</h2>
+          <p>{activeSession.task_type}</p>
+          <p>{activeSession.setup}</p>
         </div>
         <div className="quality-score">
           <span>{cognitive?.cognitive_stability ?? latest.scores.overall}</span>
@@ -216,24 +306,43 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
             <p className="eyebrow">PDF-derived evaluation framework</p>
             <h2>CATEM Cross-Layer Assessment</h2>
           </div>
-          <span>{catem?.evidence_quality?.score}% evidence quality</span>
+          <span>evidence-condition profile</span>
         </div>
         <div className="catem-layer-grid">
-          {Object.entries(catem?.layers || {}).map(([key, layer]) => (
+          {observationalLayers.map(([key, layer]) => (
             <ScoreBar
               key={key}
               label={catemLayerLabels[key] || key}
               score={layer.score}
               level={layer.level}
+              coverage={layer.coverage}
+              missingMetrics={layer.missing_metrics}
             />
           ))}
         </div>
+        {interpretationConditions && (
+          <div className="interpretation-condition-band">
+            <div>
+              <span className="interpretation-condition-symbol">𝒟t</span>
+              <div>
+                <strong>Data &amp; interpretation conditions</strong>
+                <small>Cross-cutting record metadata · not an observational layer</small>
+              </div>
+            </div>
+            <div className="interpretation-condition-score">
+              <strong>{interpretationConditions.score}</strong>
+              <span>{interpretationConditions.level} · {interpretationConditions.coverage}% coverage</span>
+            </div>
+          </div>
+        )}
         <div className="evidence-strip">
-          <LiveMetric label="Metric coverage" value={catem?.evidence_quality?.metric_coverage} unit="%" />
-          <LiveMetric label="Synchronization" value={catem?.evidence_quality?.synchronization_quality} unit="%" />
-          <LiveMetric label="Missing data" value={catem?.evidence_quality?.missing_data_percent} unit="%" />
+          <LiveMetric label="Metric coverage" value={catem?.evidence_profile?.field_coverage} unit="%" />
+          <LiveMetric label="Synchronization" value={catem?.evidence_profile?.synchronization_quality} unit="%" />
+          <LiveMetric label="Missing data" value={catem?.evidence_profile?.missing_data_burden} unit="%" />
         </div>
       </section>
+
+      {eventWindow && <EventWindowPanel eventWindow={eventWindow} />}
 
       <section className="panel catem-propositions">
         <div className="panel-heading">
@@ -322,7 +431,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel presence-panel">
         <div className="panel-heading">
-          <h2>Neural Presence System</h2>
+          <h2>Multimodal Presence Panel</h2>
           <span>{presence?.neural_presence?.state}</span>
         </div>
         <div className="cognitive-grid">
@@ -335,7 +444,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel companion-panel">
         <div className="panel-heading">
-          <h2>Embodied AI Companion</h2>
+          <h2>Adaptive Support Panel</h2>
           <span>{presence?.ai_companion?.tone}</span>
         </div>
         <div className="research-sentence">{presence?.ai_companion?.message}</div>
@@ -348,7 +457,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel">
         <div className="panel-heading">
-          <h2>Persistent Digital Self</h2>
+          <h2>Longitudinal Session Profile</h2>
           <span>{presence?.persistent_digital_self?.continuity_score}% continuity</span>
         </div>
         <div className="research-sentence">{presence?.persistent_digital_self?.memory_aware_summary}</div>
@@ -392,7 +501,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel">
         <div className="panel-heading">
-          <h2>Reality Orchestration</h2>
+          <h2>Adaptation Control Panel</h2>
           <span>{presence?.reality_orchestration?.sensory_fidelity_target}</span>
         </div>
         <div className="research-sentence">{presence?.reality_orchestration?.orchestration_goal}</div>
@@ -443,11 +552,11 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
       <section className="panel cognitive-panel">
         <div className="panel-heading">
           <h2>Cognitive State Engine</h2>
-          <span>{cognitive?.immersion_collapse_risk} collapse risk</span>
+          <span>{cognitive?.immersion_collapse_risk} instability heuristic</span>
         </div>
         <div className="cognitive-grid">
           <LiveMetric label="Stability" value={cognitive?.cognitive_stability} unit="%" />
-          <LiveMetric label="Collapse risk" value={cognitive?.collapse_risk_score} unit="%" />
+          <LiveMetric label="Instability heuristic" value={cognitive?.collapse_risk_score} unit="%" />
           <LiveMetric label="Attention drift" value={cognitive?.attention_drift} unit="%" />
           <LiveMetric label="Stress" value={cognitive?.stress_escalation} unit="" />
         </div>
@@ -455,7 +564,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel forecast-panel">
         <div className="panel-heading">
-          <h2>Predictive Failure Engine</h2>
+          <h2>Failure Forecast Heuristic</h2>
           <span>{Math.round((forecast?.confidence || 0) * 100)}% confidence</span>
         </div>
         <div className="forecast-callout">
@@ -475,7 +584,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel consciousness-panel">
         <div className="panel-heading">
-          <h2>Embodied AI Consciousness Layer</h2>
+          <h2>Embodied-State Summary</h2>
           <span>{consciousness?.state}</span>
         </div>
         <div className="cognitive-grid">
@@ -488,7 +597,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel twin-panel">
         <div className="panel-heading">
-          <h2>Human Digital Twin</h2>
+          <h2>Participant-State Profile</h2>
           <span>{digitalTwin?.adaptation_profile}</span>
         </div>
         <div className="metric-list">
@@ -522,7 +631,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel tlm-panel">
         <div className="panel-heading">
-          <h2>Telepresence Language Model</h2>
+          <h2>Narrative Summary Module</h2>
           <span>{tlm?.latent_state}</span>
         </div>
         <div className="research-sentence">{tlm?.research_sentence}</div>
@@ -535,7 +644,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel risk-panel">
         <div className="panel-heading">
-          <h2>Intelligent Risk Detection</h2>
+          <h2>Risk Rule Monitor</h2>
           <span>{liveRisks.length} active</span>
         </div>
         <div className="relationship-list">
@@ -554,8 +663,8 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel">
         <div className="panel-heading">
-          <h2>Autonomous HRI Scientist</h2>
-          <span>hypothesis engine</span>
+          <h2>Hypothesis Prompt Generator</h2>
+          <span>rule-based prompt</span>
         </div>
         <div className="research-sentence">{scientist?.hypothesis}</div>
         <div className="empty-state">{scientist?.suggested_experiment}</div>
@@ -563,7 +672,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel">
         <div className="panel-heading">
-          <h2>Embodied Memory Graph</h2>
+          <h2>Session Pattern Summary</h2>
           <span>{memoryGraph?.memory_strength}% strength</span>
         </div>
         <div className="action-list">
@@ -580,7 +689,7 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel">
         <div className="panel-heading">
-          <h2>Explainable AI Layer</h2>
+          <h2>Explanation Trace</h2>
           <span>{explanations.length} active factors</span>
         </div>
         <div className="metric-list">
@@ -629,13 +738,13 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
       <section className="panel">
         <div className="panel-heading">
           <h2>Research Analytics</h2>
-          <span>Pearson correlations</span>
+          <span>descriptive correlations with sample size</span>
         </div>
         <div className="metric-list">
           {analytics?.correlations?.map((item) => (
             <div className="metric-row" key={`${item.x}-${item.y}`}>
               <span>{item.x} vs {item.y}</span>
-              <strong>{item.pearson_r ?? 'n/a'}</strong>
+              <strong>{item.n < 3 ? `insufficient n (${item.n})` : `${item.pearson_r ?? 'n/a'} (n=${item.n})`}</strong>
             </div>
           ))}
         </div>
@@ -658,13 +767,13 @@ function Dashboard({ latest, sessions, analytics, architecture, telemetry, telem
 
       <section className="panel table-panel">
         <div className="panel-heading">
-          <h2>Experiment Runs</h2>
-          <span>participant comparison</span>
+          <h2>Session and Fixture Runs</h2>
+          <span>descriptive comparison</span>
         </div>
         <table>
           <thead>
             <tr>
-              <th>Participant</th>
+              <th>Session ID</th>
               <th>Task</th>
               <th>Latency</th>
               <th>Errors</th>
