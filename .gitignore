@@ -4,3 +4,23 @@ apps/web/dist/
 apps/web/node_modules/
 apps/web/*.log
 apps/web/.env.local
+
+# Local AI-assistant and agent working data
+.agents/
+.codex/
+.claude/
+.cursor/
+.aider*
+.audit_*/
+
+# Generated logs, caches, and temporary artifacts
+**/__pycache__/
+*.py[cod]
+*.log
+
+# Manuscripts, submission packages, and paper archives are not project source
+catem_short_paper/
+catem_latex_paper/
+embodied_presence_internet_paper_package/
+catem_short_paper*.zip
+embodied_presence_internet_paper_package.zip

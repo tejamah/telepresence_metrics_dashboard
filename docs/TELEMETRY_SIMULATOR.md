@@ -20,7 +20,7 @@ The simulator uses a 48-second cycle:
 - `baseline_alignment`: stable physiology and moderate network load.
 - `network_degradation`: latency, jitter, and packet loss rise.
 - `stress_escalation`: physiological stress, workload, errors, and safety risk rise.
-- `adaptive_recovery`: network and cognitive pressure recover as the adaptive system stabilizes.
+- `rule_based_recovery`: fixed formulas reduce the injected network and stress pressure. This phase tests recovery-state rendering; it is not a learned controller or evidence of human recovery.
 
 ## API Surface
 

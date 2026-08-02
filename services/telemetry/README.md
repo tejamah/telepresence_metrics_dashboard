@@ -19,4 +19,4 @@ The simulator is split into four generators:
 - Embodiment degradation simulator: agency, ownership, presence, visual match, haptic delay, gaze stability, motion entropy.
 - Stress escalation simulator: workload, stress index, error rate, timing variance, safety events.
 
-The WebSocket stream cycles through baseline alignment, network degradation, stress escalation, and adaptive recovery. This makes the platform feel alive without needing VR hardware, robot telemetry, or physiological sensors during early development.
+The WebSocket stream cycles through baseline alignment, network degradation, stress escalation, and rule-based recovery. The last phase uses fixed formulas rather than a learned or autonomous controller. The cycle exercises the interface without requiring VR hardware, robot telemetry, or physiological sensors during early development.

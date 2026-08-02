@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import Dashboard from './components/Dashboard'
-import type { MetricsPayload, PlatformArchitecture, TelemetryEvent } from './types'
+import type { EventWindow, MetricsPayload, PlatformArchitecture, TelemetryEvent } from './types'
 import './styles.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8010'
@@ -9,6 +9,7 @@ const WS_URL = API_URL.replace('http', 'ws')
 function App() {
   const [data, setData] = useState<MetricsPayload | null>(null)
   const [architecture, setArchitecture] = useState<PlatformArchitecture | null>(null)
+  const [eventWindow, setEventWindow] = useState<EventWindow | null>(null)
   const [telemetry, setTelemetry] = useState<TelemetryEvent | null>(null)
   const [telemetryHistory, setTelemetryHistory] = useState<TelemetryEvent[]>([])
   const [streamState, setStreamState] = useState<'connecting' | 'live' | 'offline'>('connecting')
@@ -21,9 +22,12 @@ function App() {
 
   const topInsight = useMemo(() => {
     if (telemetry?.failure_forecast?.prediction === 'teleoperation instability') {
-      return `AI copilot predicts teleoperation instability in ${telemetry.failure_forecast.time_to_event_seconds}s with ${Math.round(telemetry.failure_forecast.confidence * 100)}% confidence.`
+      return `Failure heuristic flags possible teleoperation instability in ${telemetry.failure_forecast.time_to_event_seconds}s with ${Math.round(telemetry.failure_forecast.confidence * 100)}% model confidence.`
     }
-    if (!sessions.length) return 'Upload experiment data to activate the embodied AI research copilot.'
+    if (telemetry) {
+      return telemetry.tlm_interpretation.research_sentence
+    }
+    if (!sessions.length) return 'Upload experiment data to activate the rule-based research summary.'
     return sessions.at(-1)?.insight || 'Awaiting embodied presence data.'
   }, [sessions, telemetry])
 
@@ -36,6 +40,8 @@ function App() {
       setData(await response.json())
       const architectureResponse = await fetch(`${API_URL}/platform/architecture`)
       if (architectureResponse.ok) setArchitecture(await architectureResponse.json())
+      const eventResponse = await fetch(`${API_URL}/events/object-drop`)
+      if (eventResponse.ok) setEventWindow(await eventResponse.json())
     } catch (event) {
       setError(event instanceof Error ? event.message : 'Unable to load platform data.')
     } finally {
@@ -72,6 +78,13 @@ function App() {
   useEffect(() => {
     loadMetrics()
   }, [])
+
+  useEffect(() => {
+    if (loading || !eventWindow || window.location.hash !== '#object-drop-window') return
+    window.requestAnimationFrame(() => {
+      document.getElementById('object-drop-window')?.scrollIntoView({ block: 'start' })
+    })
+  }, [eventWindow, loading])
 
   useEffect(() => {
     const socket = new WebSocket(`${WS_URL}/ws/telemetry`)
@@ -111,7 +124,7 @@ function App() {
 
       <section className="insight-band">
         <div>
-          <span>AI Insight</span>
+          <span>Rule-Based Insight</span>
           <p>{topInsight}</p>
         </div>
         <button type="button" onClick={loadMetrics} disabled={loading}>
@@ -130,6 +143,7 @@ function App() {
           telemetry={telemetry}
           telemetryHistory={telemetryHistory}
           streamState={streamState}
+          eventWindow={eventWindow}
         />
       ) : (
         <div className="loading">No sessions available yet.</div>
