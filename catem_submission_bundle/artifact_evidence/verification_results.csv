@@ -1,0 +1,18 @@
+category,test,expected,observed,passed
+functional,Invalid CSV extension,HTTP 400,HTTP 400,True
+functional,Valid CSV ingestion,1 row created,1 row created,True
+functional,API schema validation,required response objects present and schema-valid,"session, CATEM, evidence-condition, proposition-trace, and measurement-record objects present",True
+functional,Canonical event-window export,five aligned samples with traceable t=0 values,"5 samples; 35 records; offsets=[-2, -1, 0, 1, 2]",True
+functional,Measurement-contract export,all required fields present,44 records,True
+functional,WebSocket frame generation,one complete frame,complete,True
+reproducibility,Identical fixture replay,identical output hashes,"a93e4b3ed92bed6619b44f1029a308369967b7a1e577fa3576897b982e5c234d,a93e4b3ed92bed6619b44f1029a308369967b7a1e577fa3576897b982e5c234d,a93e4b3ed92bed6619b44f1029a308369967b7a1e577fa3576897b982e5c234d",True
+fault_injection,Missing HRV field,coverage decreases and HRV is listed,100.0->87.5; listed=True,True
+fault_injection,Missing physiological records,human-state coverage decreases,100.0->75.0,True
+fault_injection,Increased latency,system-layer score decreases,71.2->65.0,True
+fault_injection,Increased jitter,system-layer score decreases,71.2->66.2,True
+fault_injection,Increased packet_loss,system-layer score decreases,71.2->62.7,True
+fault_injection,Increased tracking_dropout,system-layer score decreases,71.2->65.5,True
+fault_injection,Timestamp offset,synchronization quality decreases,75.9->54.3,True
+fault_injection,Adaptation without disclosure,P6 at_risk,P6 at_risk,True
+fault_injection,Invalid numeric input,flagged as nonnumeric,None,True
+fault_injection,Simulator network degradation,"latency, jitter, and loss increase",latency 82.94->148.55; jitter 9.2->35.33; loss 2.45->6.12,True

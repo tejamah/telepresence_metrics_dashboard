@@ -1,0 +1,3 @@
+author_order,publication_name,given_name,family_name,affiliation,city,state,country,email,orcid,papercept_pin,corresponding_author,presenter
+1,Sara Falcone,Sara,Falcone,"Seidenberg School of Computer Science and Information Systems, Pace University",New York,NY,United States,sfalcone@pace.edu,[REQUIRED OR NOT SUPPLIED],[REQUIRED],no,[REQUIRED]
+2,Teja Maheshwara,Teja,Maheshwara,"Seidenberg School of Computer Science and Information Systems, Pace University",New York,NY,United States,[REQUIRED],[REQUIRED OR NOT SUPPLIED],[REQUIRED],yes,[REQUIRED]

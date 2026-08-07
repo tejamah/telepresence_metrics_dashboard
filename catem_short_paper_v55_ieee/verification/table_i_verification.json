@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-08-06T14:05:32.261669+00:00",
+  "harness_generated_at": "2026-08-06T14:05:32.024048+00:00",
+  "software_version": "0.2.0",
+  "public_tag": "v0.2.0",
+  "public_tag_commit": "44a99330ec30793b4576c10663653a249fa3d2b7",
+  "head_commit": "44a99330ec30793b4576c10663653a249fa3d2b7",
+  "tagged_harness_and_fixture_sources_unchanged": true,
+  "tagged_source_sha256": {
+    "apps/api/verification.py": "eb3e8d97e9ae835eebd0c1e04abf841c5ddfea6e627ecb60d32602ecfcecd7a9",
+    "apps/api/routes.py": "3fd5503d5bd019b6f7226d97fee41794da11340613c86d4f48d0d89a4fcd52d7"
+  },
+  "baseline_fixture": {
+    "name": "Session 2",
+    "task_type": "Remote navigation",
+    "sha256_before_faults": "a621121dcf272f1add9a0639d84169d88e2ae27cd86d0648989d062dfa6ee849",
+    "sha256_after_faults": "a621121dcf272f1add9a0639d84169d88e2ae27cd86d0648989d062dfa6ee849",
+    "unchanged": true
+  },
+  "raw_harness_summary": {
+    "tests": 17,
+    "passed": 17,
+    "failed": 0
+  },
+  "raw_harness_fault_results_match": true,
+  "required_values": {
+    "latency_baseline_ms": 82.0,
+    "timestamp_alignment_error_baseline_ms": 3.4,
+    "tracking_dropout_fault_output": 65.5,
+    "hrv_expected_record_count": 8,
+    "all_match": true
+  },
+  "table_i_rows": [
+    {
+      "condition": "Latency",
+      "input_metric": "latency",
+      "input_concept": "end-to-end latency",
+      "baseline_input": 82.0,
+      "modified_input": 220,
+      "input_unit": "ms",
+      "output_metric": "prototype_system_summary",
+      "baseline_output": 71.2,
+      "fault_output": 65.0,
+      "manuscript_left": "Latency: $82\\rightarrow220$~ms",
+      "manuscript_right": "Prototype system summary decreased: $71.2\\rightarrow65.0$",
+      "manuscript_match": true
+    },
+    {
+      "condition": "HRV record removed",
+      "input_metric": "hrv",
+      "input_concept": "expected Human State and Cognition fixture records",
+      "baseline_input": 8,
+      "modified_input": 7,
+      "input_unit": "records",
+      "output_metric": "human_state_coverage",
+      "baseline_output": 100.0,
+      "fault_output": 87.5,
+      "manuscript_left": "HRV record removed ($8$ expected records $\\rightarrow 7$ present)",
+      "manuscript_right": "Human State and Cognition coverage decreased: $100\\%\\rightarrow87.5\\%$",
+      "manuscript_match": true
+    },
+    {
+      "condition": "Timestamp error",
+      "input_metric": "timestamp_accuracy",
+      "input_concept": "estimated timestamp-alignment error relative to the reference time base",
+      "baseline_input": 3.4,
+      "modified_input": 30,
+      "input_unit": "ms_error",
+      "output_metric": "synchronization_quality",
+      "baseline_output": 75.9,
+      "fault_output": 54.3,
+      "manuscript_left": "Timestamp error: $3.4\\rightarrow30$~ms",
+      "manuscript_right": "Synchronization quality decreased: $75.9\\rightarrow54.3$",
+      "manuscript_match": true
+    },
+    {
+      "condition": "Tracking dropout",
+      "input_metric": "tracking_dropout",
+      "input_concept": "synthetic fixture tracking-dropout input",
+      "baseline_input": 4.0,
+      "modified_input": 15,
+      "input_unit": "%",
+      "output_metric": "prototype_system_summary",
+      "baseline_output": 71.2,
+      "fault_output": 65.5,
+      "manuscript_left": "Tracking dropout: $4\\%\\rightarrow15\\%$",
+      "manuscript_right": "Prototype system summary decreased: $71.2\\rightarrow65.5$",
+      "manuscript_match": true
+    }
+  ],
+  "table_i_matches_manuscript": true,
+  "verification_passed": true
+}
