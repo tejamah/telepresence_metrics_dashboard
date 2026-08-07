@@ -1,8 +1,0 @@
-Candidate PaperCept classifications (select the closest conference-defined labels; maximum three):
-
-1. Telepresence and teleoperation
-2. Human factors and evaluation
-3. Multimodal sensing and measurement
-
-Do not paste these blindly if PaperCept presents a controlled keyword list.
-

@@ -1,5 +1,0 @@
-condition,input_metric,input_concept,baseline_input,modified_input,input_unit,output_metric,baseline_output,fault_output,manuscript_left,manuscript_right,manuscript_match
-Latency,latency,end-to-end latency,82.0,220,ms,prototype_system_summary,71.2,65.0,Latency: $82\rightarrow220$~ms,Prototype system summary decreased: $71.2\rightarrow65.0$,True
-HRV record removed,hrv,expected Human State and Cognition fixture records,8,7,records,human_state_coverage,100.0,87.5,HRV record removed ($8$ expected records $\rightarrow 7$ present),Human State and Cognition coverage decreased: $100\%\rightarrow87.5\%$,True
-Timestamp error,timestamp_accuracy,estimated timestamp-alignment error relative to the reference time base,3.4,30,ms_error,synchronization_quality,75.9,54.3,Timestamp error: $3.4\rightarrow30$~ms,Synchronization quality decreased: $75.9\rightarrow54.3$,True
-Tracking dropout,tracking_dropout,synthetic fixture tracking-dropout input,4.0,15,%,prototype_system_summary,71.2,65.5,Tracking dropout: $4\%\rightarrow15\%$,Prototype system summary decreased: $71.2\rightarrow65.5$,True
