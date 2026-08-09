@@ -142,7 +142,7 @@ function LiveTimeline({ history }: { history: TelemetryEvent[] }) {
         const risk = event.risk_events[0]?.type || event.embodiment_prediction.state
         return (
           <span key={`${event.timestamp}-${index}`}>
-            {new Date(event.timestamp).toLocaleTimeString()} / {latency}ms / stability {stability}% / {risk}
+            {new Date(event.timestamp).toLocaleTimeString()} / {latency}ms / heuristic stability {stability}% / rule flag: {risk}
           </span>
         )
       }) : <span>Awaiting live telemetry frames</span>}
@@ -268,7 +268,7 @@ function Dashboard({
         </div>
         <div className="quality-score">
           <span>{cognitive?.cognitive_stability ?? latest.scores.overall}</span>
-          <small>cognitive stability</small>
+          <small>heuristic cognitive stability</small>
         </div>
       </section>
 
@@ -292,7 +292,7 @@ function Dashboard({
           })}
           <div className="graph-core">
             <strong>{livePrediction?.state || 'stable'}</strong>
-            <span>Embodiment graph</span>
+            <span>Heuristic embodiment state</span>
           </div>
         </div>
         <div className="timeline-strip">
@@ -375,22 +375,33 @@ function Dashboard({
         </div>
       </section>
 
+      <section className="panel prototype-boundary-panel">
+        <div className="panel-heading">
+          <h2>Experimental Dashboard Modules</h2>
+          <span>future-work prototype</span>
+        </div>
+        <p className="interpretation-boundary">
+          The modules below use deterministic rules or heuristic composites. They are not validated CATEM paper
+          contributions, predictive models, diagnostic tools, or evidence of causal relationships.
+        </p>
+      </section>
+
       <section className="panel stream-wall">
         <div className="panel-heading">
-          <h2>Live Cognitive Streams</h2>
+          <h2>Live Heuristic Streams</h2>
           <span>{signalHistory.length} frames buffered</span>
         </div>
         <div className="stream-grid">
           <SignalStrip label="Latency" values={latencySeries} unit="ms" />
-          <SignalStrip label="Cognitive stability" values={cognitiveSeries} unit="%" />
-          <SignalStrip label="Embodiment prediction" values={embodimentSeries} unit="%" />
-          <SignalStrip label="Risk energy" values={riskSeries} unit="%" />
+          <SignalStrip label="Heuristic cognitive stability" values={cognitiveSeries} unit="%" />
+          <SignalStrip label="Heuristic embodiment estimate" values={embodimentSeries} unit="%" />
+          <SignalStrip label="Rule-based risk signal" values={riskSeries} unit="%" />
         </div>
       </section>
 
       <section className="panel simulator-panel">
         <div className="panel-heading">
-          <h2>Real Telemetry Simulator</h2>
+          <h2>Synthetic Telemetry Simulator</h2>
           <span>{simulatorState?.phase?.replaceAll('_', ' ') || 'warming up'}</span>
         </div>
         <div className="simulator-phase">
@@ -445,7 +456,7 @@ function Dashboard({
       <section className="panel companion-panel">
         <div className="panel-heading">
           <h2>Adaptive Support Panel</h2>
-          <span>{presence?.ai_companion?.tone}</span>
+          <span>experimental · rule-based · {presence?.ai_companion?.tone}</span>
         </div>
         <div className="research-sentence">{presence?.ai_companion?.message}</div>
         <div className="action-list">
@@ -502,7 +513,7 @@ function Dashboard({
       <section className="panel">
         <div className="panel-heading">
           <h2>Adaptation Control Panel</h2>
-          <span>{presence?.reality_orchestration?.sensory_fidelity_target}</span>
+          <span>experimental · rule-based · {presence?.reality_orchestration?.sensory_fidelity_target}</span>
         </div>
         <div className="research-sentence">{presence?.reality_orchestration?.orchestration_goal}</div>
         <div className="action-list">
@@ -536,7 +547,7 @@ function Dashboard({
         </div>
         <div className="embodiment-graph">
           <div>
-            <span>Predicted embodiment</span>
+            <span>Heuristic embodiment estimate</span>
             <strong>{livePrediction?.predicted_embodiment_quality ?? 'n/a'}</strong>
           </div>
           <div className="bar-track">
@@ -551,8 +562,8 @@ function Dashboard({
 
       <section className="panel cognitive-panel">
         <div className="panel-heading">
-          <h2>Cognitive State Engine</h2>
-          <span>{cognitive?.immersion_collapse_risk} instability heuristic</span>
+          <h2>Cognitive State Heuristic</h2>
+          <span>experimental · {cognitive?.immersion_collapse_risk} rule-based flag</span>
         </div>
         <div className="cognitive-grid">
           <LiveMetric label="Stability" value={cognitive?.cognitive_stability} unit="%" />
@@ -565,13 +576,13 @@ function Dashboard({
       <section className="panel forecast-panel">
         <div className="panel-heading">
           <h2>Failure Forecast Heuristic</h2>
-          <span>{Math.round((forecast?.confidence || 0) * 100)}% confidence</span>
+          <span>experimental · {Math.round((forecast?.confidence || 0) * 100)}% heuristic score</span>
         </div>
         <div className="forecast-callout">
           <strong>{forecast?.prediction}</strong>
           <span>
             {forecast?.time_to_event_seconds
-              ? `Predicted in ${forecast.time_to_event_seconds} seconds`
+              ? `Heuristic flag in ${forecast.time_to_event_seconds} seconds`
               : 'Control envelope remains stable'}
           </span>
         </div>
@@ -585,7 +596,7 @@ function Dashboard({
       <section className="panel consciousness-panel">
         <div className="panel-heading">
           <h2>Embodied-State Summary</h2>
-          <span>{consciousness?.state}</span>
+          <span>experimental heuristic · {consciousness?.state}</span>
         </div>
         <div className="cognitive-grid">
           <LiveMetric label="Awareness" value={consciousness?.awareness} unit="%" />
@@ -598,7 +609,7 @@ function Dashboard({
       <section className="panel twin-panel">
         <div className="panel-heading">
           <h2>Participant-State Profile</h2>
-          <span>{digitalTwin?.adaptation_profile}</span>
+          <span>experimental heuristic · {digitalTwin?.adaptation_profile}</span>
         </div>
         <div className="metric-list">
           <div className="metric-row">
@@ -619,7 +630,7 @@ function Dashboard({
       <section className="panel">
         <div className="panel-heading">
           <h2>Reality Synchronization Engine</h2>
-          <span>{realitySync?.orchestration_state}</span>
+          <span>experimental composite · {realitySync?.orchestration_state}</span>
         </div>
         <div className="cognitive-grid">
           <LiveMetric label="Robot" value={realitySync?.physical_robot_sync} unit="%" />
@@ -632,7 +643,7 @@ function Dashboard({
       <section className="panel tlm-panel">
         <div className="panel-heading">
           <h2>Narrative Summary Module</h2>
-          <span>{tlm?.latent_state}</span>
+          <span>experimental · rule-based · {tlm?.latent_state}</span>
         </div>
         <div className="research-sentence">{tlm?.research_sentence}</div>
         <div className="timeline-mini">
@@ -673,7 +684,7 @@ function Dashboard({
       <section className="panel">
         <div className="panel-heading">
           <h2>Session Pattern Summary</h2>
-          <span>{memoryGraph?.memory_strength}% strength</span>
+          <span>experimental heuristic · {memoryGraph?.memory_strength}% strength</span>
         </div>
         <div className="action-list">
           {memoryGraph?.past_failure_patterns?.map((pattern) => (
@@ -690,7 +701,7 @@ function Dashboard({
       <section className="panel">
         <div className="panel-heading">
           <h2>Explanation Trace</h2>
-          <span>{explanations.length} active factors</span>
+          <span>experimental heuristic · {explanations.length} active factors</span>
         </div>
         <div className="metric-list">
           {explanations.length ? explanations.map((item) => (
@@ -698,7 +709,7 @@ function Dashboard({
               <span>{item.factor}: {item.detail}</span>
               <strong>{Math.round(item.impact * 100)}%</strong>
             </div>
-          )) : <div className="empty-state">Prediction model is not flagging dominant degradation factors.</div>}
+          )) : <div className="empty-state">The rule-based heuristic is not flagging dominant degradation signals.</div>}
         </div>
       </section>
 

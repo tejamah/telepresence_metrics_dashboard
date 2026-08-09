@@ -8,6 +8,10 @@ The current research implementation centers on **CATEM (Cross-Layer Telepresence
 
 CATEM v0.2.0 is the reference implementation accompanying the CATEM research paper prepared for the 2026 IEEE Conference on Telepresence.
 
+> **CATEM v0.2.0 Scope Notice:** The CATEM results reported in the Telepresence 2026 short paper are software-verification results using deterministic synthetic fixtures. They demonstrate implementation and measurement-contract behavior, not construct validity, predictive performance, researcher utility, or causal relationships. Additional dashboard modules are experimental prototypes and future-work components and are not presented as validated contributions of the CATEM paper.
+
+Reviewer-facing CATEM materials are indexed in the [CATEM Reproducibility Guide](docs/CATEM_REPRODUCIBILITY.md), with direct links to the canonical object-drop fixture, versioned specification, verification results, sample data, and dashboard screenshot.
+
 The current release focuses on measurement organization, timestamp-aware alignment, provenance, missingness, transformation traceability, event-centered inspection, and reproducible software verification.
 
 The broader **Embodied Presence Internet** vision is described separately under **Future Research**. Those roadmap items are not claims about implemented or scientifically validated CATEM v0.2.0 capabilities.
@@ -152,6 +156,8 @@ CATEM v0.2.0 includes deterministic fault-injection tests for:
 - tracking dropout
 
 Each fault is independently applied to the same unmodified baseline.
+
+The object-drop event window and the controlled tracking-dropout fault are two distinct synthetic fixtures. The event window contains five time-indexed tracking-dropout samples (`2%`, `3%`, `15%`, `8%`, and `3%`) around the object-drop event and is used to verify event alignment and display behavior. The controlled fault test instead changes the unmodified Session 2 baseline from `4%` to `15%` to verify the system-summary response. These values serve different software-verification purposes; neither fixture represents participant data or evidence of causality.
 
 These tests verify **software behavior and measurement-contract conformance**. They do not establish construct validity, predictive accuracy, human effectiveness, causal relationships, hardware timing accuracy, or researcher utility.
 

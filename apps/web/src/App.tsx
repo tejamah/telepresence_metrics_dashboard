@@ -22,9 +22,9 @@ function App() {
 
   const topInsight = useMemo(() => {
     if (telemetry?.failure_forecast?.prediction === 'teleoperation instability') {
-      return `AI copilot predicts teleoperation instability in ${telemetry.failure_forecast.time_to_event_seconds}s with ${Math.round(telemetry.failure_forecast.confidence * 100)}% confidence.`
+      return `A rule-based heuristic flags possible teleoperation instability in ${telemetry.failure_forecast.time_to_event_seconds}s (${Math.round(telemetry.failure_forecast.confidence * 100)}% heuristic score).`
     }
-    if (!sessions.length) return 'Upload experiment data to activate the embodied AI research copilot.'
+    if (!sessions.length) return 'Upload experiment data to activate rule-based descriptive summaries.'
     return sessions.at(-1)?.insight || 'Awaiting embodied presence data.'
   }, [sessions, telemetry])
 
@@ -121,7 +121,7 @@ function App() {
 
       <section className="insight-band">
         <div>
-          <span>AI Insight</span>
+          <span>Rule-Based Insight · experimental prototype</span>
           <p>{topInsight}</p>
         </div>
         <button type="button" onClick={loadMetrics} disabled={loading}>

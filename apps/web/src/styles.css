@@ -754,6 +754,7 @@ button {
 .catem-overview,
 .catem-propositions,
 .catem-recommendations,
+.prototype-boundary-panel,
 .event-window-panel {
   grid-column: span 12;
 }

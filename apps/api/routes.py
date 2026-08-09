@@ -574,15 +574,15 @@ def generate_insight(session: StoredSession) -> str:
     clauses: list[str] = []
 
     if metrics.get("agency", 0) >= 75 and metrics.get("ownership", 100) < 60:
-        clauses.append("strong agency but reduced ownership, likely from visual mismatch or delayed feedback")
+        clauses.append("strong agency but reduced ownership, alongside visual mismatch or delayed feedback")
     if metrics.get("latency", 0) > 100:
-        clauses.append("high latency may be suppressing presence and agency")
+        clauses.append("high latency alongside lower presence or agency")
     if metrics.get("workload", 0) > 70 and metrics.get("error_rate", 0) > 10:
         clauses.append("high workload is paired with elevated error rates")
     if scores["embodiment"]["score"] >= 75 and scores["performance"]["score"] >= 70:
-        clauses.append("embodiment appears to support task performance")
+        clauses.append("elevated embodiment and task-performance summaries occurring together")
     if metrics.get("heart_rate", 0) > 110 or metrics.get("hrv", 100) < 40:
-        clauses.append("physiological signals suggest stress or fatigue")
+        clauses.append("physiological values crossing the prototype stress-or-fatigue rule threshold")
     if not clauses:
         clauses.append("the session shows balanced telepresence quality with no dominant risk signal")
 
@@ -591,10 +591,10 @@ def generate_insight(session: StoredSession) -> str:
 
 def detect_risks(metrics: dict[str, float]) -> list[dict[str, Any]]:
     rules = [
-        ("unstable sensor pipeline", metrics.get("packet_loss", 0) > 5, "high packet loss can desynchronize multimodal streams"),
-        ("synchronization failure", metrics.get("latency", 0) > 150, "network or rendering delay exceeds teleoperation comfort bounds"),
-        ("embodiment degradation", metrics.get("agency", 100) < 55 or metrics.get("ownership", 100) < 55, "agency or ownership has dropped below research threshold"),
-        ("cognitive overload", metrics.get("workload", 0) > 80 or metrics.get("heart_rate", 0) > 115, "workload and physiology suggest stress"),
+        ("unstable sensor pipeline", metrics.get("packet_loss", 0) > 5, "packet loss exceeds the prototype synchronization-rule threshold"),
+        ("synchronization failure", metrics.get("latency", 0) > 150, "network or rendering delay exceeds the prototype rule threshold"),
+        ("embodiment degradation", metrics.get("agency", 100) < 55 or metrics.get("ownership", 100) < 55, "agency or ownership is below the prototype rule threshold"),
+        ("cognitive overload", metrics.get("workload", 0) > 80 or metrics.get("heart_rate", 0) > 115, "the rule-based workload or physiology flag is active"),
         ("unsafe control condition", metrics.get("safety_events", 0) >= 3, "repeated safety events require experiment review"),
     ]
     return [
@@ -621,12 +621,12 @@ def predict_embodiment_state(metrics: dict[str, float]) -> dict[str, Any]:
 
 def explain_prediction(metrics: dict[str, float]) -> list[dict[str, Any]]:
     factors = [
-        ("latency", metrics.get("latency", 0), 90, "latency increased beyond the embodiment comfort band"),
-        ("fps", metrics.get("fps", 90), 55, "frame rate dropped below stable visual feedback threshold"),
-        ("packet_loss", metrics.get("packet_loss", 0), 3, "packet loss may destabilize motor synchronization"),
-        ("heart_rate", metrics.get("heart_rate", 80), 105, "physiology suggests stress escalation"),
-        ("workload", metrics.get("workload", 50), 70, "workload indicates cognitive overload pressure"),
-        ("agency", metrics.get("agency", 100), 60, "agency perception is degrading"),
+        ("latency", metrics.get("latency", 0), 90, "latency exceeds the prototype rule threshold"),
+        ("fps", metrics.get("fps", 90), 55, "frame rate is below the prototype rule threshold"),
+        ("packet_loss", metrics.get("packet_loss", 0), 3, "packet loss exceeds the prototype rule threshold"),
+        ("heart_rate", metrics.get("heart_rate", 80), 105, "physiology exceeds the prototype stress-flag threshold"),
+        ("workload", metrics.get("workload", 50), 70, "workload exceeds the prototype overload-flag threshold"),
+        ("agency", metrics.get("agency", 100), 60, "agency is below the prototype rule threshold"),
     ]
     explanations = []
     for name, value, threshold, detail in factors:
@@ -746,7 +746,7 @@ def telepresence_language_model(metrics: dict[str, float]) -> dict[str, Any]:
         "latent_state": consciousness["state"],
         "reasoning_trace": [
             f"presence continuity is {consciousness['presence_continuity']}%",
-            f"dominant causal factor: {top_factor}",
+            f"dominant explanatory signal: {top_factor}",
             f"forecast: {forecast['prediction']}",
         ],
         "adaptive_decision": forecast["adaptive_actions"],
