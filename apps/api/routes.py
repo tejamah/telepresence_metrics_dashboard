@@ -1133,7 +1133,7 @@ def _analytics() -> dict[str, Any]:
 
     relationships = [
         {
-            "label": "Higher latency -> lower agency",
+            "label": "Higher latency associated with lower agency",
             "status": "observed" if averages.get("latency", 0) > 90 and averages.get("agency", 100) < 80 else "monitor",
         },
         {
