@@ -1,10 +1,10 @@
 # Embodied Presence Internet
 
-## CATEM — Cross-Layer Telepresence Evaluation and Measurement
+## CATEM — A Timestamp-Aware Cross-Layer Framework for Telepresence Evaluation
 
 The **Embodied Presence Internet** is a research platform for Human-Robot Interaction (HRI), telepresence, VR/AR, robotics, embodied AI, and multimodal human-experience research.
 
-The current research implementation centers on **CATEM (Cross-Layer Telepresence Evaluation and Measurement)**, an open-source measurement and reporting framework for organizing heterogeneous telepresence evidence around shared task events.
+The current research implementation centers on **CATEM: A Timestamp-Aware Cross-Layer Framework for Telepresence Evaluation**, an open-source measurement and reporting framework for organizing heterogeneous telepresence evidence around shared task events.
 
 CATEM v0.2.0 is the reference implementation accompanying the CATEM research paper prepared for the 2026 IEEE Conference on Telepresence.
 
