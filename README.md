@@ -6,10 +6,6 @@ The **Embodied Presence Internet** is a research platform for Human-Robot Intera
 
 The current research implementation centers on **CATEM: A Timestamp-Aware Cross-Layer Framework for Telepresence Evaluation**, an open-source measurement and reporting framework for organizing heterogeneous telepresence evidence around shared task events.
 
-CATEM v0.2.0 is the reference implementation accompanying the CATEM research paper prepared for the 2026 IEEE Conference on Telepresence.
-
-> **CATEM v0.2.0 Scope Notice:** The CATEM results reported in the Telepresence 2026 short paper are software-verification results using deterministic synthetic fixtures. They demonstrate implementation and measurement-contract behavior, not construct validity, predictive performance, researcher utility, or causal relationships. Additional dashboard modules are experimental prototypes and future-work components and are not presented as validated contributions of the CATEM paper.
-
 CATEM reproducibility materials are indexed in the [CATEM Reproducibility Guide](docs/CATEM_REPRODUCIBILITY.md), with direct links to the canonical object-drop fixture, versioned specification, verification results, sample data, and dashboard screenshot.
 
 The current release focuses on measurement organization, timestamp-aware alignment, provenance, missingness, transformation traceability, event-centered inspection, and reproducible software verification.
