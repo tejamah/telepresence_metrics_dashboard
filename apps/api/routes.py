@@ -774,15 +774,17 @@ def reality_sync_state(metrics: dict[str, float]) -> dict[str, Any]:
 
 
 def autonomous_scientist(metrics: dict[str, float]) -> dict[str, Any]:
-    hypothesis = "Latency above 120ms reduces ownership and agency during embodied teleoperation."
+    hypothesis = "Hypothesis: Latency above 120ms may be associated with reduced ownership and agency during embodied teleoperation."
+    suggested_experiment = "Test this using counterbalanced trials at 40ms, 80ms, 120ms, and 160ms latency with synchronized HRV, gaze, task errors, and ownership ratings."
     if metrics.get("workload", 0) > 75:
-        hypothesis = "Cognitive workload may mediate the relationship between network instability and task errors."
+        hypothesis = "Hypothesis: Cognitive workload may be associated with network instability and task errors."
     if metrics.get("ownership", 100) < 60:
-        hypothesis = "Visual-haptic mismatch may be the primary driver of ownership collapse."
+        hypothesis = "Hypothesis: Visual-haptic mismatch may be associated with reduced ownership."
+        suggested_experiment = "Test this using counterbalanced visual-haptic mismatch conditions with synchronized ownership ratings."
     return {
         "observed": telepresence_language_model(metrics)["research_sentence"],
         "hypothesis": hypothesis,
-        "suggested_experiment": "Run counterbalanced trials at 40ms, 80ms, 120ms, and 160ms latency with synchronized HRV, gaze, task errors, and ownership ratings.",
+        "suggested_experiment": suggested_experiment,
         "analysis_plan": ["Pearson/Spearman correlation", "repeated-measures ANOVA", "mixed-effects regression", "failure-time prediction"],
     }
 
@@ -1135,14 +1137,14 @@ def _analytics() -> dict[str, Any]:
             "status": "observed" if averages.get("latency", 0) > 90 and averages.get("agency", 100) < 80 else "monitor",
         },
         {
-            "label": "Higher embodiment -> better task performance",
-            "status": "observed"
+            "label": "Higher embodiment ↔ better task performance",
+            "status": "descriptive pattern"
             if averages.get("embodiment", 0) >= 70 and averages.get("task_efficiency", 0) >= 70
             else "monitor",
         },
         {
-            "label": "Higher workload -> more errors",
-            "status": "observed" if averages.get("workload", 0) > 65 and averages.get("error_rate", 0) > 8 else "monitor",
+            "label": "Higher workload ↔ more errors",
+            "status": "descriptive pattern" if averages.get("workload", 0) > 65 and averages.get("error_rate", 0) > 8 else "monitor",
         },
     ]
     correlations = [
