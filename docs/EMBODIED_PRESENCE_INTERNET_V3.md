@@ -20,7 +20,7 @@ The version retains the reference dashboard's major sections:
 8. multimodal, participant-state, sensory, shared-reality, and adaptation prototype panels;
 9. descriptive rule traces and hypothesis prompts;
 10. core metrics and insufficient-sample analytics; and
-11. the platform pipeline and session comparison table.
+11. the experimental research architecture and session comparison table.
 
 The live simulator changes values over time, so regenerated dashboard PDFs may show a different active session or live frame while preserving the same authored fixtures, layout, contracts, and interpretation boundaries.
 

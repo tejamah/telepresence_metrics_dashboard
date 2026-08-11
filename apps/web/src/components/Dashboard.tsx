@@ -268,7 +268,7 @@ function Dashboard({
         </div>
         <div className="quality-score">
           <span>{cognitive?.cognitive_stability ?? latest.scores.overall}</span>
-          <small>heuristic cognitive stability</small>
+          <small>rule-based stability indicator</small>
         </div>
       </section>
 
@@ -393,7 +393,7 @@ function Dashboard({
         </div>
         <div className="stream-grid">
           <SignalStrip label="Latency" values={latencySeries} unit="ms" />
-          <SignalStrip label="Heuristic cognitive stability" values={cognitiveSeries} unit="%" />
+          <SignalStrip label="Rule-based stability indicator" values={cognitiveSeries} unit="%" />
           <SignalStrip label="Heuristic embodiment estimate" values={embodimentSeries} unit="%" />
           <SignalStrip label="Rule-based risk signal" values={riskSeries} unit="%" />
         </div>
@@ -681,7 +681,7 @@ function Dashboard({
       <section className="panel">
         <div className="panel-heading">
           <h2>Session Pattern Summary</h2>
-          <span>experimental heuristic · {memoryGraph?.memory_strength}% strength</span>
+          <span>experimental heuristic · {memoryGraph?.memory_strength}% rule-activation score</span>
         </div>
         <div className="action-list">
           {memoryGraph?.past_failure_patterns?.map((pattern) => (
@@ -760,7 +760,7 @@ function Dashboard({
 
       <section className="panel">
         <div className="panel-heading">
-          <h2>Platform Pipeline</h2>
+          <h2>Experimental Research Architecture</h2>
           <span>{architecture?.research_modules?.length || 0} modules</span>
         </div>
         <div className="pipeline-list">

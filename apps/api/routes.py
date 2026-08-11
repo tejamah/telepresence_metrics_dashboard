@@ -757,8 +757,8 @@ def telepresence_language_model(metrics: dict[str, float]) -> dict[str, Any]:
         ],
         "adaptive_decision": forecast["review_prompts"],
         "research_sentence": (
-            f"The operator is in a {consciousness['state']} embodiment state with "
-            f"a {forecast['rule_status']} descriptive rule condition and {top_factor} as the main flagged input."
+            f"Heuristic state label: {consciousness['state']}. "
+            f"The {forecast['rule_status']} descriptive rule condition flags {top_factor} for review."
         ),
     }
 
@@ -845,7 +845,7 @@ def emotional_ai_companion(metrics: dict[str, float]) -> dict[str, Any]:
     cognitive = cognitive_state(metrics)
     forecast = failure_forecast(metrics)
     if cognitive["stress_escalation"] == "elevated":
-        message = "You appear cognitively overloaded. Reducing environmental complexity and activating stabilization mode."
+        message = "Current inputs exceed the prototype workload threshold. Review workload-related measurements and settings before acting."
         tone = "supportive"
     elif forecast["rule_status"] == "elevated":
         message = "Current inputs activate an elevated deterministic rule condition. Review the flagged measurements before acting."
