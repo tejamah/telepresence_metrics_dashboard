@@ -34,9 +34,9 @@ The committed reference artifact records:
 
 These are authored synthetic software-verification results. As stated in the paper, they support measurement-contract conformance and transparent implementation behavior. They do not establish construct validity, predictive performance, researcher utility, causal relationships, hardware timing accuracy, human effectiveness, or production readiness.
 
-## Post-submission extensions on `main`
+## Post-submission extensions on the validation branch
 
-The following results were added after the manuscript was received and must not be described as results reported in the submitted paper:
+The separate [`catem-validation-v1`](https://github.com/tejamah/telepresence_metrics_dashboard/tree/catem-validation-v1) branch contains the following later results. They are intentionally excluded from the paper-version implementation and evidence artifacts on `main` and must not be described as results reported in the submitted paper:
 
 | Extension | Result | Scope |
 |---|---:|---|

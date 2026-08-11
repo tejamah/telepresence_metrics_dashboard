@@ -5,9 +5,11 @@ records are deterministic software fixtures, not participant data.
 
 The submitted manuscript's metadata and frozen evidence boundary are recorded in
 [`PAPER_VERSION.md`](PAPER_VERSION.md). The paper reports the original 17-check,
-three-replay software-verification baseline. The 39-check Validation v1 and
-33-check end-to-end pipeline suites were added after submission and are not
-results reported in that manuscript.
+three-replay software-verification baseline. The separate
+[`catem-validation-v1`](https://github.com/tejamah/telepresence_metrics_dashboard/tree/catem-validation-v1)
+branch contains the later 39-check Validation v1 and 33-check end-to-end
+pipeline suites. They are not results reported in the manuscript or paper-version
+artifacts on `main`.
 
 ## Materials
 
@@ -19,9 +21,6 @@ results reported in that manuscript.
 | Canonical event fixture | [`catem/catem_specification_v0.2.json`](catem/catem_specification_v0.2.json), key: `event_window_fixture` | Five ordered object-drop samples and their 35 traceable source records |
 | Versioned CATEM specification | [`catem/catem_specification_v0.2.json`](catem/catem_specification_v0.2.json) | Four-layer schema, measurement-record schema, API response schema, transform registry, rule specifications, session fixtures, and the complete canonical object-drop event fixture |
 | Verification results | [`catem/verification_results.json`](catem/verification_results.json) | Environment metadata and the 17 functional, reproducibility, and fault-injection checks reported by the software harness |
-| Validation v1 method | [`CATEM_VALIDATION_V1.md`](CATEM_VALIDATION_V1.md) | Synthetic ground-truth timing, missingness, provenance, input-quality, export, and event-reconstruction method plus ESP32-S3 handoff |
-| Validation v1 results | [`catem/validation_v1_results.json`](catem/validation_v1_results.json) and [`catem/validation_v1_results.csv`](catem/validation_v1_results.csv) | Machine-readable results from the separate 39-check deterministic validation harness |
-| End-to-end pipeline results | [`catem/pipeline_validation_results.json`](catem/pipeline_validation_results.json) and [`catem/pipeline_validation_results.csv`](catem/pipeline_validation_results.csv) | Results from 33 checks that traverse FastAPI ingestion, declared-offset synchronization, CATEM processing, measurement-contract generation, and API export |
 
 The object-drop fixture is the `event_window_fixture` object inside the versioned
 specification. It contains five ordered samples at offsets `-2`, `-1`, `0`,
@@ -64,23 +63,3 @@ check fails. To regenerate the versioned specification, run:
 cd apps/api
 python export_catem_specification.py
 ```
-
-## Re-run Validation v1
-
-The Validation v1 harness is intentionally separate from the original verifier:
-
-```bash
-cd apps/api
-python validation_v1.py
-```
-
-The default run performs 100 deterministic replays and 100 three-source timing trials. Its synthetic quantitative timing results test the calculations against known inputs; they do not establish physical hardware accuracy. See [`CATEM_VALIDATION_V1.md`](CATEM_VALIDATION_V1.md) for the complete boundary and ESP32-S3 experiment handoff.
-
-Re-run the separately reported end-to-end pipeline suite:
-
-```bash
-cd apps/api
-python pipeline_validation.py
-```
-
-The reference pipeline run sends 300 events through the in-process FastAPI ASGI interface and exports 10,200 measurement records through CATEM's JSON and CSV endpoints. It does not test clock-offset estimation, network socket transport, or physical timing accuracy.

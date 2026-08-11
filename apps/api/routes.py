@@ -4,18 +4,16 @@ import asyncio
 import copy
 import csv
 import io
-import json
 import math
 import platform
 import statistics
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
-from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -276,9 +274,6 @@ class TelemetryEvent(BaseModel):
     participant_id: str
     source: str = Field(default="simulator")
     timestamp: str | None = None
-    source_clock_offset_ms: float = 0.0
-    sampling_rate_hz: float | None = Field(default=None, gt=0)
-    provenance: str | None = None
     metrics: dict[str, float] = Field(default_factory=dict)
 
 
@@ -354,32 +349,11 @@ def _metric_layer(name: str) -> str:
     return "unassigned"
 
 
-def synchronize_timestamp(source_timestamp: str, source_clock_offset_ms: float) -> str:
-    """Align an offset-aware source timestamp to UTC using a declared clock offset.
-
-    A positive offset means the source clock is ahead of the reference clock and
-    is therefore subtracted. Offset estimation is intentionally outside this
-    function and must come from a versioned acquisition configuration.
-    """
-    normalized = source_timestamp[:-1] + "+00:00" if source_timestamp.endswith("Z") else source_timestamp
-    try:
-        parsed = datetime.fromisoformat(normalized)
-    except (TypeError, ValueError) as exc:
-        raise ValueError("timestamp must be valid ISO 8601") from exc
-    if parsed.tzinfo is None:
-        raise ValueError("timestamp must include a UTC offset")
-    aligned = parsed.astimezone(timezone.utc) - timedelta(milliseconds=source_clock_offset_ms)
-    return aligned.isoformat(timespec="milliseconds").replace("+00:00", "Z")
-
-
 def measurement_contract(
     metrics: dict[str, float],
     *,
     timestamp: str | None,
     source: str,
-    source_timestamp: str | None = None,
-    sampling_rate_hz: float | None = None,
-    provenance: str | None = None,
 ) -> list[dict[str, Any]]:
     """Return an inspectable record for every expected or supplied metric.
 
@@ -403,14 +377,13 @@ def measurement_contract(
                 "direction": METRIC_DIRECTIONS.get(name, "higher_is_better"),
                 "instrument_or_sensor": "not_reported",
                 "timestamp": timestamp,
-                "source_timestamp": source_timestamp,
-                "sampling_rate_hz": sampling_rate_hz,
+                "sampling_rate_hz": None,
                 "valid_range": METRIC_VALID_RANGES.get(name),
                 "missing": missing,
                 "missingness_status": "missing" if missing else "observed",
                 "preprocessing": "none_declared",
                 "source": source,
-                "provenance": provenance or f"{source}:raw_metric",
+                "provenance": f"{source}:raw_metric",
                 "transform_version": CATEM_VERSION,
                 "interpretation_boundary": LAYER_INTERPRETATION_BOUNDARIES[layer],
             }
@@ -1339,25 +1312,7 @@ def platform_architecture() -> dict[str, Any]:
 @router.post("/telemetry")
 def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
     payload = event.dict()
-    source_timestamp = payload["timestamp"] or datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
-    try:
-        aligned_timestamp = synchronize_timestamp(
-            source_timestamp,
-            payload["source_clock_offset_ms"],
-        )
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    payload["source_timestamp"] = source_timestamp
-    payload["timestamp"] = aligned_timestamp
-    payload["synchronization"] = {
-        "source_timestamp": source_timestamp,
-        "aligned_timestamp": aligned_timestamp,
-        "declared_clock_offset_ms": payload["source_clock_offset_ms"],
-        "method": "declared_clock_offset_subtraction",
-        "interpretation_boundary": (
-            "Alignment applies a declared offset; CATEM does not estimate or validate the offset."
-        ),
-    }
+    payload["timestamp"] = payload["timestamp"] or datetime.utcnow().isoformat(timespec="milliseconds")
     payload["software_version"] = SOFTWARE_VERSION
     payload["api_schema_version"] = API_SCHEMA_VERSION
     payload["risk_events"] = detect_risks(payload["metrics"])
@@ -1377,9 +1332,6 @@ def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
         payload["metrics"],
         timestamp=payload["timestamp"],
         source=payload["source"],
-        source_timestamp=payload["source_timestamp"],
-        sampling_rate_hz=payload["sampling_rate_hz"],
-        provenance=payload["provenance"],
     )
     TELEMETRY_STREAM.append(payload)
     return payload
@@ -1388,73 +1340,6 @@ def ingest_telemetry(event: TelemetryEvent) -> dict[str, Any]:
 @router.get("/telemetry/latest")
 def latest_telemetry() -> dict[str, Any]:
     return {"events": TELEMETRY_STREAM[-50:]}
-
-
-@router.get("/telemetry/export/json")
-def export_telemetry_json() -> Response:
-    payload = {
-        "software_version": SOFTWARE_VERSION,
-        "catem_version": CATEM_VERSION,
-        "api_schema_version": API_SCHEMA_VERSION,
-        "events": TELEMETRY_STREAM,
-    }
-    return Response(
-        content=json.dumps(payload, sort_keys=True, separators=(",", ":")),
-        media_type="application/json",
-        headers={"Content-Disposition": "attachment; filename=catem_telemetry.json"},
-    )
-
-
-@router.get("/telemetry/export/csv")
-def export_telemetry_csv() -> Response:
-    fieldnames = [
-        "session_id",
-        "participant_id",
-        "source",
-        "source_timestamp",
-        "aligned_timestamp",
-        "metric",
-        "construct",
-        "layer",
-        "raw_value",
-        "unit",
-        "sampling_rate_hz",
-        "valid_range",
-        "missing",
-        "missingness_status",
-        "provenance",
-        "transform_version",
-        "interpretation_boundary",
-    ]
-    output = io.StringIO(newline="")
-    writer = csv.DictWriter(output, fieldnames=fieldnames, lineterminator="\n")
-    writer.writeheader()
-    for event in TELEMETRY_STREAM:
-        for record in event.get("measurement_records", []):
-            writer.writerow({
-                "session_id": event.get("session_id"),
-                "participant_id": event.get("participant_id"),
-                "source": record.get("source"),
-                "source_timestamp": record.get("source_timestamp"),
-                "aligned_timestamp": record.get("timestamp"),
-                "metric": record.get("metric"),
-                "construct": record.get("construct"),
-                "layer": record.get("layer"),
-                "raw_value": record.get("raw_value"),
-                "unit": record.get("unit"),
-                "sampling_rate_hz": record.get("sampling_rate_hz"),
-                "valid_range": json.dumps(record.get("valid_range"), separators=(",", ":")),
-                "missing": record.get("missing"),
-                "missingness_status": record.get("missingness_status"),
-                "provenance": record.get("provenance"),
-                "transform_version": record.get("transform_version"),
-                "interpretation_boundary": record.get("interpretation_boundary"),
-            })
-    return Response(
-        content=output.getvalue(),
-        media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=catem_telemetry.csv"},
-    )
 
 
 @router.get("/research/scientist")
