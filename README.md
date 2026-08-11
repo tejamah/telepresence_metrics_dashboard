@@ -10,6 +10,8 @@ CATEM reproducibility materials are indexed in the [CATEM Reproducibility Guide]
 
 The submitted paper version is documented in [Paper Version and Evidence Baseline](docs/PAPER_VERSION.md). The manuscript is **“CATEM: A Timestamp-Aware Cross-Layer Framework for Telepresence Evaluation”** by Teja Maheshwara and Sara Falcone, submitted as Manuscript 82 to the 2026 IEEE Conference on Telepresence. It reports CATEM v0.2.0 and the original 17-check, three-replay synthetic software-verification baseline. Later Validation v1 results remain on the separate [`catem-validation-v1`](https://github.com/tejamah/telepresence_metrics_dashboard/tree/catem-validation-v1) branch and are not part of the paper-version evidence on `main`.
 
+The complete current dashboard is preserved as the [Embodied Presence Internet v3 reference](docs/EMBODIED_PRESENCE_INTERNET_V3.md) and an [11-page PDF artifact](docs/embodied_presence_internet_dashboard_v3.pdf). This reference follows the supplied August 9 dashboard layout while retaining the corrected rule-based language: it reports no failure time, probability, or predictive confidence.
+
 The current release focuses on measurement organization, timestamp-aware alignment, provenance, missingness, transformation traceability, event-centered inspection, and reproducible software verification.
 
 The broader **Embodied Presence Internet** vision is described separately under **Future Research**. Those roadmap items are not claims about implemented or scientifically validated CATEM v0.2.0 capabilities.
@@ -570,6 +572,7 @@ Each stage requires independent validation before claims from that stage should 
 - `docs/TELEMETRY_SIMULATOR.md`
 - `docs/CATEM_REPRODUCIBILITY.md`
 - `docs/PAPER_VERSION.md`
+- `docs/EMBODIED_PRESENCE_INTERNET_V3.md`
 
 `docs/CATEM_REPRODUCIBILITY.md` should be the primary reviewer-facing entry point for the CATEM paper.
 

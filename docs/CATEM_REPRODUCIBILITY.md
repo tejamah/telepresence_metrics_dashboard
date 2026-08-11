@@ -16,6 +16,7 @@ artifacts on `main`.
 | Item | Location | What it contains |
 |---|---|---|
 | Paper version record | [`PAPER_VERSION.md`](PAPER_VERSION.md) | Submitted manuscript metadata, v0.2.0 evidence baseline, and explicit separation of post-submission validation |
+| Embodied Presence Internet v3 | [`EMBODIED_PRESENCE_INTERNET_V3.md`](EMBODIED_PRESENCE_INTERNET_V3.md) and [`embodied_presence_internet_dashboard_v3.pdf`](embodied_presence_internet_dashboard_v3.pdf) | Version record and 11-page dashboard rendering; only its CATEM evidence views are paper evidence, while later pages remain experimental future-work modules |
 | Dashboard screenshot | [`catem/dashboard_overview_full.png`](catem/dashboard_overview_full.png) | Current live-session, four-layer assessment, cross-cutting condition band, and object-drop event-window views |
 | Sample CSV | [`../data/sample_metrics.csv`](../data/sample_metrics.csv) | Uploadable session records using the documented metric columns |
 | Canonical event fixture | [`catem/catem_specification_v0.2.json`](catem/catem_specification_v0.2.json), key: `event_window_fixture` | Five ordered object-drop samples and their 35 traceable source records |
