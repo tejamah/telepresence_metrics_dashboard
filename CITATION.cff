@@ -1,10 +1,13 @@
 cff-version: 1.2.0
-message: "If you use CATEM or the Embodied Presence Internet prototype, please cite this software."
-title: "CATEM: A Cross-Layer Measurement and Adaptation-Governance Framework with an Executable Prototype for Real-Time Telepresence Evaluation"
+message: "If you use CATEM, please cite this software and the corresponding paper when final bibliographic information is available."
+title: "CATEM: A Timestamp-Aware Cross-Layer Framework for Telepresence Evaluation"
 type: software
 authors:
-  - family-names: Mahesh
+  - family-names: Maheshwara
     given-names: Teja
+    affiliation: "Pace University, United States"
+  - family-names: Falcone
+    given-names: Sara
     affiliation: "Pace University, United States"
 repository-code: "https://github.com/tejamah/telepresence_metrics_dashboard"
 url: "https://github.com/tejamah/telepresence_metrics_dashboard"

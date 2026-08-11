@@ -8,6 +8,8 @@ The current research implementation centers on **CATEM: A Timestamp-Aware Cross-
 
 CATEM reproducibility materials are indexed in the [CATEM Reproducibility Guide](docs/CATEM_REPRODUCIBILITY.md), with direct links to the canonical object-drop fixture, versioned specification, verification results, sample data, and dashboard screenshot.
 
+The submitted paper version is documented in [Paper Version and Evidence Baseline](docs/PAPER_VERSION.md). The manuscript is **“CATEM: A Timestamp-Aware Cross-Layer Framework for Telepresence Evaluation”** by Teja Maheshwara and Sara Falcone, submitted as Manuscript 82 to the 2026 IEEE Conference on Telepresence. It reports CATEM v0.2.0 and the original 17-check, three-replay synthetic software-verification baseline. Later Validation v1 results are identified separately as post-submission extensions.
+
 The current release focuses on measurement organization, timestamp-aware alignment, provenance, missingness, transformation traceability, event-centered inspection, and reproducible software verification. A separate [CATEM Validation v1 harness](docs/CATEM_VALIDATION_V1.md) adds deterministic synthetic ground-truth tests without changing the evidence boundary of the original 17-check verifier.
 
 The broader **Embodied Presence Internet** vision is described separately under **Future Research**. Those roadmap items are not claims about implemented or scientifically validated CATEM v0.2.0 capabilities.
@@ -611,6 +613,7 @@ Each stage requires independent validation before claims from that stage should 
 - `docs/advanced_platform.md`
 - `docs/TELEMETRY_SIMULATOR.md`
 - `docs/CATEM_REPRODUCIBILITY.md`
+- `docs/PAPER_VERSION.md`
 
 `docs/CATEM_REPRODUCIBILITY.md` should be the primary reviewer-facing entry point for the CATEM paper.
 
@@ -618,9 +621,11 @@ Each stage requires independent validation before claims from that stage should 
 
 ## Versioning
 
-The CATEM paper corresponds to:
+The submitted CATEM paper corresponds to:
 
 `CATEM v0.2.0`
+
+Its exact manuscript metadata, evidence baseline, and separation from post-submission validation work are recorded in `docs/PAPER_VERSION.md`.
 
 Research artifacts should retain explicit version information so manuscript claims can be traced to the implementation used to generate them.
 

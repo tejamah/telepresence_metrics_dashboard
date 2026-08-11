@@ -3,10 +3,17 @@
 This page is the reviewer-facing index for CATEM version 0.2.0. The included
 records are deterministic software fixtures, not participant data.
 
+The submitted manuscript's metadata and frozen evidence boundary are recorded in
+[`PAPER_VERSION.md`](PAPER_VERSION.md). The paper reports the original 17-check,
+three-replay software-verification baseline. The 39-check Validation v1 and
+33-check end-to-end pipeline suites were added after submission and are not
+results reported in that manuscript.
+
 ## Materials
 
 | Item | Location | What it contains |
 |---|---|---|
+| Paper version record | [`PAPER_VERSION.md`](PAPER_VERSION.md) | Submitted manuscript metadata, v0.2.0 evidence baseline, and explicit separation of post-submission validation |
 | Dashboard screenshot | [`catem/dashboard_overview_full.png`](catem/dashboard_overview_full.png) | Current live-session, four-layer assessment, cross-cutting condition band, and object-drop event-window views |
 | Sample CSV | [`../data/sample_metrics.csv`](../data/sample_metrics.csv) | Uploadable session records using the documented metric columns |
 | Canonical event fixture | [`catem/catem_specification_v0.2.json`](catem/catem_specification_v0.2.json), key: `event_window_fixture` | Five ordered object-drop samples and their 35 traceable source records |
