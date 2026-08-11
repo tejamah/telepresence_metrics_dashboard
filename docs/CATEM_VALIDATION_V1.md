@@ -1,6 +1,6 @@
 # CATEM Validation v1
 
-Status: deterministic synthetic ground-truth validation implemented; hardware-in-the-loop phase not yet executed
+Status: deterministic synthetic ground-truth and end-to-end pipeline validation implemented; hardware-in-the-loop phase not yet executed
 Software target: CATEM 0.2.0
 
 ## Purpose and evidence boundary
@@ -8,6 +8,11 @@ Software target: CATEM 0.2.0
 CATEM Validation v1 tests whether the software preserves and reconstructs known evidence correctly. It does not test whether prototype transforms, thresholds, layer summaries, or weights are psychologically or scientifically valid.
 
 The committed reference run establishes deterministic behavior for authored timing, missingness, provenance, input-quality, export, and event-window fixtures. It does not establish hardware synchronization accuracy, construct validity, ecological validity, causal validity, predictive accuracy, human-subject effectiveness, or production readiness.
+
+Two results are reported separately:
+
+1. the original 39-check synthetic calculation-validation suite; and
+2. a 33-check end-to-end suite that exercises the actual FastAPI ingestion, CATEM processing, measurement-contract, and export path.
 
 ## Reproduce the reference run
 
@@ -49,6 +54,62 @@ The reference run contains 39 checks. The quantitative timing output is calculat
 | Maximum absolute error | `2.0 ms` |
 
 These values validate calculations against known synthetic inputs. They are not performance claims for a physical device or deployed system.
+
+## CATEM end-to-end pipeline validation
+
+The second suite addresses the boundary between validation helper calculations and the actual CATEM implementation. It sends authored telemetry through the application using in-process ASGI requests:
+
+```text
+synthetic source event
+        |
+        v
+FastAPI POST /telemetry
+        |
+        v
+routes.synchronize_timestamp()
+        |
+        +--> routes.catem_assessment()
+        |
+        v
+routes.measurement_contract()
+        |
+        v
+FastAPI JSON and CSV export endpoints
+```
+
+Run it from the repository root:
+
+```bash
+python apps/api/pipeline_validation.py
+```
+
+Or from `apps/api`:
+
+```bash
+python pipeline_validation.py
+```
+
+The reference run contains 33 checks and uses:
+
+- 100 trials and three streams per trial;
+- 300 API-ingested events and timing observations;
+- exact declared offsets of `+10`, `+50`, `+100`, `+250`, and `+500 ms`;
+- network, tracking, and sensor rates of 50 Hz, 90 Hz, and 100 Hz;
+- 10,200 measurement-contract records; and
+- JSON and CSV exports produced by actual FastAPI route handlers.
+
+It verifies HTTP request validation, declared-offset alignment, CATEM response generation, source and aligned timestamp propagation, raw-value fidelity, explicit missingness, sampling-rate preservation, provenance continuity, export completeness, and deterministic repeated exports.
+
+The quantitative timing result remains `0.0 ms` signed mean error, `1.2 ms` mean absolute error, and `2.0 ms` P95 and maximum absolute error because the end-to-end fixture deliberately uses the same known residual pattern. Unlike the original helper-level suite, these values are recovered after the events traverse CATEM's application path.
+
+Results:
+
+- `docs/catem/pipeline_validation_results.json`
+- `docs/catem/pipeline_validation_results.csv`
+
+### End-to-end evidence boundary
+
+The pipeline suite uses the real application path, but the requests and clock offsets remain synthetic. CATEM applies an externally declared clock offset; it does not estimate or independently validate that offset. The ASGI requests run in-process and therefore exclude socket transport, reverse proxies, deployment infrastructure, device clocks, and physical reference uncertainty. Those remain part of the ESP32-S3 phase.
 
 ## What the harness checks
 

@@ -180,6 +180,27 @@ python validation_v1.py
 
 The committed reference run is in [`docs/catem/validation_v1_results.json`](docs/catem/validation_v1_results.json). It uses known synthetic offsets and deterministic residual error; it is not evidence of ESP32, camera, network-emulator, or other hardware accuracy. The executable method and hardware-in-the-loop handoff are documented in [`docs/CATEM_VALIDATION_V1.md`](docs/CATEM_VALIDATION_V1.md).
 
+### CATEM end-to-end pipeline validation
+
+A separately reported 33-check suite sends 300 synthetic events through the actual FastAPI and CATEM implementation path:
+
+```text
+ASGI request parsing
+  -> POST /telemetry
+  -> declared-offset timestamp synchronization
+  -> CATEM assessment
+  -> measurement-contract generation
+  -> GET /telemetry/export/json and /telemetry/export/csv
+```
+
+The run preserves source and aligned timestamps, raw metric values, sampling rates, missingness, and provenance across 10,200 measurement records. Run it with:
+
+```bash
+python pipeline_validation.py
+```
+
+The results are committed in [`docs/catem/pipeline_validation_results.json`](docs/catem/pipeline_validation_results.json). This closes the synthetic end-to-end software-path gap; it still does not validate clock-offset estimation, physical hardware timing, or network transport outside the process.
+
 ---
 
 ## Prototype Summaries
