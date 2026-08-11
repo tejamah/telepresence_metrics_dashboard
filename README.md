@@ -2,21 +2,20 @@
 
 ## CATEM — A Timestamp-Aware Cross-Layer Framework for Telepresence Evaluation
 
-The **Embodied Presence Internet** is a research platform for Human-Robot Interaction (HRI), telepresence, VR/AR, robotics, embodied AI, and multimodal human-experience research.
+The **Embodied Presence Internet** is a research platform for Human-Robot Interaction (HRI), telepresence, VR/AR, robotics, embodied AI, and multimodal human-experience research.
 
-The current research implementation centers on **CATEM: A Timestamp-Aware Cross-Layer Framework for Telepresence Evaluation**, an open-source measurement and reporting framework for organizing heterogeneous telepresence evidence around shared task events.
+The current research implementation centers on **CATEM: A Timestamp-Aware Cross-Layer Framework for Telepresence Evaluation**, an open-source measurement and reporting framework for organizing heterogeneous telepresence evidence around shared task events.
 
-CATEM reproducibility materials are indexed in the [CATEM Reproducibility Guide](docs/CATEM_REPRODUCIBILITY.md), with direct links to the canonical object-drop fixture, versioned specification, verification results, sample data, and dashboard screenshot.
+CATEM reproducibility materials are indexed in the [CATEM Reproducibility Guide](https://github.com/tejamah/telepresence_metrics_dashboard/blob/main/docs/CATEM_REPRODUCIBILITY.md), with direct links to the canonical object-drop fixture, versioned specification, verification results, sample data, and dashboard screenshot.
 
-The submitted paper version is documented in [Paper Version and Evidence Baseline](docs/PAPER_VERSION.md). The manuscript is **“CATEM: A Timestamp-Aware Cross-Layer Framework for Telepresence Evaluation”** by Teja Maheshwara and Sara Falcone, submitted as Manuscript 82 to the 2026 IEEE Conference on Telepresence. It reports CATEM v0.2.0 and the original 17-check, three-replay synthetic software-verification baseline. Later Validation v1 results remain on the separate [`catem-validation-v1`](https://github.com/tejamah/telepresence_metrics_dashboard/tree/catem-validation-v1) branch and are not part of the paper-version evidence on `main`.
 
-The complete current dashboard is preserved as the [Embodied Presence Internet v3 reference](docs/EMBODIED_PRESENCE_INTERNET_V3.md) and an [11-page PDF artifact](docs/embodied_presence_internet_dashboard_v3.pdf). This reference follows the supplied August 9 dashboard layout while retaining the corrected rule-based language: it reports no failure time, probability, or predictive confidence.
+The complete current dashboard is preserved as the [Embodied Presence Internet v3 reference](https://github.com/tejamah/telepresence_metrics_dashboard/blob/main/docs/EMBODIED_PRESENCE_INTERNET_V3.md) and an [11-page PDF artifact](https://github.com/tejamah/telepresence_metrics_dashboard/blob/main/docs/embodied_presence_internet_dashboard_v3.pdf). This reference retains conservative rule-based language and reports no failure time, probability, or predictive confidence.
 
 The current release focuses on measurement organization, timestamp-aware alignment, provenance, missingness, transformation traceability, event-centered inspection, and reproducible software verification.
 
 Additional validation work is maintained separately from the core CATEM v0.2.0 implementation so later experiments do not silently change the evidence associated with this release.
 
-The broader **Embodied Presence Internet** vision is described separately under **Future Research**. Those roadmap items are not claims about implemented or scientifically validated CATEM v0.2.0 capabilities.
+The broader **Embodied Presence Internet** vision is described separately under **Future Research**. Those roadmap items are not claims about implemented or scientifically validated CATEM v0.2.0 capabilities.
 
 ---
 
@@ -26,7 +25,7 @@ Telepresence studies often combine robot telemetry, network measurements, tracki
 
 These streams may differ in units, sampling rates, timestamps, missingness, provenance, and interpretation. CATEM provides a common measurement contract for preserving these distinctions while allowing researchers to inspect measurements around shared task events.
 
-CATEM supports evidence organization and reporting. It does **not** collapse heterogeneous constructs into a universal telepresence score.
+CATEM supports evidence organization and reporting. It does **not** collapse heterogeneous constructs into a universal telepresence score.
 
 ---
 
@@ -56,16 +55,16 @@ The current research prototype supports:
 
 CATEM organizes evidence into four observational layers:
 
-1. **Experience** — agency, ownership, self-location, presence, social presence
-2. **Action** — task error, task efficiency, completion time, path efficiency, safety events
-3. **Human State and Cognition** — workload, heart rate, HRV, galvanic response, cybersickness, situation awareness
-4. **System** — latency, jitter, frame rate, packet loss, tracking dropout, haptic delay
+1. **Experience** — agency, ownership, self-location, presence, social presence
+2. **Action** — task error, task efficiency, completion time, path efficiency, safety events
+3. **Human State and Cognition** — workload, heart rate, HRV, galvanic response, cybersickness, situation awareness
+4. **System** — latency, jitter, frame rate, packet loss, tracking dropout, haptic delay
 
 These layers organize observations without asserting that measures in different layers are interchangeable.
 
 ### Data and Interpretation Conditions
 
-CATEM separately records cross-cutting **Data and Interpretation Conditions**, including:
+CATEM separately records cross-cutting **Data and Interpretation Conditions**, including:
 
 - timestamp-alignment quality
 - missingness
@@ -75,7 +74,7 @@ CATEM separately records cross-cutting **Data and Interpretation Conditions**, i
 - reliability evidence
 - interpretation boundaries
 
-These conditions qualify evidence across the four observational layers and are **not a fifth layer**.
+These conditions qualify evidence across the four observational layers and are **not a fifth layer**.
 
 ---
 
@@ -107,14 +106,15 @@ Expected-but-absent measurements remain explicit rather than silently disappeari
 
 ## Event-Centered Analysis
 
-The canonical software-verification fixture uses an object-drop event at `t = 0` with five explicit samples:
+The canonical software-verification fixture uses an object-drop event at `t = 0` with five explicit samples:
 
-```text
+```
 -2 s
 -1 s
  0 s
 +1 s
 +2 s
+
 ```
 
 Seven measures are represented across the window:
@@ -127,15 +127,15 @@ Seven measures are represented across the window:
 - agency
 - task error
 
-This yields **35 traceable source records**.
+This yields **35 traceable source records**.
 
-Temporal alignment indicates co-occurrence inside the selected evidence window. It does **not** establish causality.
+Temporal alignment indicates co-occurrence inside the selected evidence window. It does **not** establish causality.
 
 ---
 
 ## Synthetic Verification Data
 
-The current CATEM verification uses **authored synthetic data** designed to exercise the software pipeline under deterministic and repeatable conditions.
+The current CATEM verification uses **authored synthetic data** designed to exercise the software pipeline under deterministic and repeatable conditions.
 
 The current verification data are not:
 
@@ -159,9 +159,9 @@ CATEM v0.2.0 includes deterministic fault-injection tests for:
 
 Each fault is independently applied to the same unmodified baseline.
 
-The object-drop event window and the controlled tracking-dropout fault are two distinct synthetic fixtures. The event window contains five time-indexed tracking-dropout samples (`2%`, `3%`, `15%`, `8%`, and `3%`) around the object-drop event and is used to verify event alignment and display behavior. The controlled fault test instead changes the unmodified Session 2 baseline from `4%` to `15%` to verify the system-summary response. These values serve different software-verification purposes; neither fixture represents participant data or evidence of causality.
+The object-drop event window and the controlled tracking-dropout fault are two distinct synthetic fixtures. The event window contains five time-indexed tracking-dropout samples (`2%`, `3%`, `15%`, `8%`, and `3%`) around the object-drop event and is used to verify event alignment and display behavior. The controlled fault test instead changes the unmodified Session 2 baseline from `4%` to `15%` to verify the system-summary response. These values serve different software-verification purposes; neither fixture represents participant data or evidence of causality.
 
-These tests verify **software behavior and measurement-contract conformance**. They do not establish construct validity, predictive accuracy, human effectiveness, causal relationships, hardware timing accuracy, or researcher utility.
+These tests verify **software behavior and measurement-contract conformance**. They do not establish construct validity, predictive accuracy, human effectiveness, causal relationships, hardware timing accuracy, or researcher utility.
 
 ---
 
@@ -169,33 +169,38 @@ These tests verify **software behavior and measurement-contract conformance**. T
 
 The prototype may generate layer-level summaries for software verification and visualization.
 
-These summaries are **not validated telepresence scales** and are not presented as a universal telepresence score. Future empirical studies may omit aggregation entirely or replace prototype aggregation with a preregistered method.
+These summaries are **not validated telepresence scales** and are not presented as a universal telepresence score. Future empirical studies may omit aggregation entirely or replace prototype aggregation with a preregistered method.
 
 ---
 
 ## Tech Stack
 
 ### Frontend
+
 - React
 - TypeScript
 
 Potential future visualization extensions:
+
 - Recharts
 - Three.js
 - Framer Motion
 
 ### Backend
+
 - FastAPI
 - Python
 - WebSockets
 
 ### Current Data Representation
+
 - CSV
 - JSON
 - versioned schemas
 - reproducibility fixtures
 
 ### Future Infrastructure Targets
+
 - PostgreSQL
 - TimescaleDB
 - vector databases
@@ -210,10 +215,11 @@ Future infrastructure targets are roadmap items unless explicitly documented in 
 
 ## CSV Format
 
-Use `data/sample_metrics.csv` or compatible rows with fields such as:
+Use `data/sample_metrics.csv` or compatible rows with fields such as:
 
-```text
+```
 participant_id,task_type,setup,session_time,embodiment,ownership,agency,self_location,presence,social_presence,situation_awareness,trust,task_efficiency,task_completion_time,error_rate,path_efficiency,safety_events,workload,collaboration_quality,heart_rate,hrv,galvanic_response,cybersickness,latency,jitter,fps,packet_loss,tracking_dropout,visual_match,haptic_delay,timestamp_accuracy,missing_data_percent,fusion_latency,sampling_sync,autonomy_assistance,adaptation_disclosed,override_available
+
 ```
 
 Not every field is required for every study. Expected fields, missingness rules, measurement definitions, and transformations should be specified by the study configuration and measurement contract.
@@ -222,36 +228,36 @@ Not every field is required for every study. Expected fields, missingness rules,
 
 ## Run Backend
 
-```bash
+```
 cd apps/api
 pip install -r requirements.txt
 uvicorn main:app --reload --host 127.0.0.1 --port 8010
 ```
 
-API: `http://127.0.0.1:8010`
+API: `http://127.0.0.1:8010`
 
 ## Run Frontend
 
-```bash
+```
 cd apps/web
 npm install
 npm run dev
 ```
 
-Web app: `http://127.0.0.1:5180`
+Web app: `http://127.0.0.1:5180`
 
 ---
 
 ## Research Platform Endpoints
 
-- `POST /telemetry` — ingest telemetry records
-- `GET /telemetry/latest` — retrieve recent telemetry events
-- `WS /ws/telemetry` — development telemetry stream
-- `GET /simulation/telemetry-profile` — simulator phases and configured signal generators
-- `GET /simulation/telemetry-preview` — short generated telemetry sequence
-- `GET /analysis` — prototype analysis outputs
-- `GET /events/object-drop` — canonical five-sample object-drop fixture with 35 source records
-- `GET /platform/architecture` — research platform architecture information
+- `POST /telemetry` — ingest telemetry records
+- `GET /telemetry/latest` — retrieve recent telemetry events
+- `WS /ws/telemetry` — development telemetry stream
+- `GET /simulation/telemetry-profile` — simulator phases and configured signal generators
+- `GET /simulation/telemetry-preview` — short generated telemetry sequence
+- `GET /analysis` — prototype analysis outputs
+- `GET /events/object-drop` — canonical five-sample object-drop fixture with 35 source records
+- `GET /platform/architecture` — research platform architecture information
 
 Any analysis outputs should be interpreted according to their registered transformation and validation status.
 
@@ -259,7 +265,7 @@ Any analysis outputs should be interpreted according to their registered transfo
 
 ## Repository Structure
 
-```text
+```
 apps/
   web/
   api/
@@ -286,6 +292,7 @@ docs/
   DATA_STRATEGY.md
   DEPLOYMENT_ARCHITECTURE.md
   RESEARCH_ROADMAP.md
+
 ```
 
 Directory names associated with future components describe intended architecture and do not by themselves imply implementation or validation.
@@ -294,7 +301,7 @@ Directory names associated with future components describe intended architecture
 
 ## CATEM Reproducibility
 
-Reviewer-facing materials are indexed in:
+Reproducibility materials are indexed in:
 
 `docs/CATEM_REPRODUCIBILITY.md`
 
@@ -313,7 +320,7 @@ The reproducibility package should link to:
 
 The current package is intended to establish that the software behaves consistently with the CATEM measurement contract under the provided synthetic fixtures.
 
-It does **not** establish:
+It does **not** establish:
 
 - content validity
 - construct validity
@@ -332,7 +339,7 @@ CATEM v0.2.0 should be understood as:
 
 > An executable measurement and reporting framework for organizing, synchronizing, preserving, inspecting, and exporting heterogeneous telepresence evidence.
 
-It should **not** currently be interpreted as:
+It should **not** currently be interpreted as:
 
 - a validated model for measuring telepresence itself
 - a universal telepresence scoring system
@@ -349,11 +356,11 @@ It should **not** currently be interpreted as:
 
 # Future Research — Embodied Presence Internet
 
-CATEM may support a broader research program called the **Embodied Presence Internet**.
+CATEM may support a broader research program called the **Embodied Presence Internet**.
 
 The long-term goal is to investigate infrastructure for remote embodied interaction in which system, behavioral, experiential, and physiological evidence can be synchronized, preserved, analyzed, and potentially used by adaptive AI systems.
 
-The following are **future research directions**, not CATEM v0.2.0 claims.
+The following are **future research directions**, not CATEM v0.2.0 claims.
 
 ## 1. Real-World Telepresence Validation
 
@@ -417,7 +424,7 @@ Any statistical or machine-learning model should remain a separate analysis laye
 
 Future research may investigate whether multimodal evidence can predict teleoperation or interaction failures using variables such as latency, jitter, packet loss, tracking degradation, workload, physiology, and task behavior.
 
-CATEM v0.2.0 does **not** establish predictive performance.
+CATEM v0.2.0 does **not** establish predictive performance.
 
 ## 6. Embodiment Modeling
 
@@ -435,7 +442,7 @@ Such models should not be treated as direct measurements of internal mental stat
 
 A longer-term direction is to investigate digital representations of a participant's time-varying interaction state using embodiment, behavior, physiology, interaction history, environment, and system conditions.
 
-**Human digital twin** is a future research concept here, not an implemented CATEM v0.2.0 capability.
+**Human digital twin** is a future research concept here, not an implemented CATEM v0.2.0 capability.
 
 ## 9. Embodied Memory Graph
 
@@ -527,7 +534,7 @@ Multimodal data involving voice, gaze, motion, physiology, and behavior may reve
 
 # Research Roadmap
 
-```text
+```
 CATEM v0.2.0
 Synthetic software verification
         |
@@ -557,6 +564,7 @@ Longitudinal embodied interaction
         |
         v
 Embodied Presence Internet
+
 ```
 
 Each stage requires independent validation before claims from that stage should be treated as established.
@@ -573,38 +581,35 @@ Each stage requires independent validation before claims from that stage should 
 - `docs/advanced_platform.md`
 - `docs/TELEMETRY_SIMULATOR.md`
 - `docs/CATEM_REPRODUCIBILITY.md`
-- `docs/PAPER_VERSION.md`
 - `docs/EMBODIED_PRESENCE_INTERNET_V3.md`
 
-`docs/CATEM_REPRODUCIBILITY.md` should be the primary reviewer-facing entry point for the CATEM paper.
+`docs/CATEM_REPRODUCIBILITY.md` is the primary entry point for CATEM reproducibility materials.
 
 ---
 
 ## Versioning
 
-The submitted CATEM paper corresponds to:
+The current core research implementation is:
 
 `CATEM v0.2.0`
 
-Its exact manuscript metadata, evidence baseline, and separation from post-submission validation work are recorded in `docs/PAPER_VERSION.md`.
+Research artifacts retain explicit version information so results can be traced to the implementation that generated them.
 
-Research artifacts should retain explicit version information so manuscript claims can be traced to the implementation used to generate them.
-
-Changes after a tagged research release should be documented separately rather than silently changing the evidence associated with the publication.
+Later experimental and validation work should be versioned separately rather than silently modifying existing evidence artifacts.
 
 ---
 
 ## Citation
 
-Machine-readable citation metadata are provided in `CITATION.cff`.
+Citation metadata may be added or updated when a stable software release or archival record is available.
 
-If you use CATEM in research, please cite the corresponding CATEM publication once final bibliographic information is available.
+Until then, users should reference the repository URL and the CATEM software version used in their work.
 
 ---
 
 ## License
 
-This project is open source under the MIT License. See `LICENSE`.
+This project is open source under the MIT License. See `LICENSE`.
 
 ---
 
