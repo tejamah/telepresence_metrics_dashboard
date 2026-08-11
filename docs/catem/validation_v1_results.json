@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T14:58:58.575379+00:00",
+  "generated_at": "2026-08-11T15:04:23.777791+00:00",
   "milestone": "CATEM Validation v1: synthetic ground-truth measurement validation",
   "scope": "Deterministic synthetic validation of timestamp alignment, provenance, missingness, input-quality detection, reproducible export, and event reconstruction.",
   "interpretation_boundary": "These results do not establish hardware synchronization accuracy, construct or ecological validity, causal validity, predictive accuracy, human-subject effectiveness, or production readiness.",
@@ -7,7 +7,7 @@
     "software_version": "0.2.0",
     "catem_version": "catem-0.2",
     "api_schema_version": "2026-07",
-    "repository_commit": "f2b59b1"
+    "repository_commit": "9d3e78f"
   },
   "environment": {
     "python": "3.13.2",
