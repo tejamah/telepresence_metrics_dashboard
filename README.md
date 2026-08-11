@@ -8,7 +8,7 @@ The current research implementation centers on **CATEM: A Timestamp-Aware Cross-
 
 CATEM reproducibility materials are indexed in the [CATEM Reproducibility Guide](docs/CATEM_REPRODUCIBILITY.md), with direct links to the canonical object-drop fixture, versioned specification, verification results, sample data, and dashboard screenshot.
 
-The current release focuses on measurement organization, timestamp-aware alignment, provenance, missingness, transformation traceability, event-centered inspection, and reproducible software verification.
+The current release focuses on measurement organization, timestamp-aware alignment, provenance, missingness, transformation traceability, event-centered inspection, and reproducible software verification. A separate [CATEM Validation v1 harness](docs/CATEM_VALIDATION_V1.md) adds deterministic synthetic ground-truth tests without changing the evidence boundary of the original 17-check verifier.
 
 The broader **Embodied Presence Internet** vision is described separately under **Future Research**. Those roadmap items are not claims about implemented or scientifically validated CATEM v0.2.0 capabilities.
 
@@ -156,6 +156,50 @@ Each fault is independently applied to the same unmodified baseline.
 The object-drop event window and the controlled tracking-dropout fault are two distinct synthetic fixtures. The event window contains five time-indexed tracking-dropout samples (`2%`, `3%`, `15%`, `8%`, and `3%`) around the object-drop event and is used to verify event alignment and display behavior. The controlled fault test instead changes the unmodified Session 2 baseline from `4%` to `15%` to verify the system-summary response. These values serve different software-verification purposes; neither fixture represents participant data or evidence of causality.
 
 These tests verify **software behavior and measurement-contract conformance**. They do not establish construct validity, predictive accuracy, human effectiveness, causal relationships, hardware timing accuracy, or researcher utility.
+
+---
+
+## CATEM Validation v1
+
+The next-stage validation harness is separate from the original software verifier and adds 39 deterministic checks covering:
+
+- 100 identical JSON and CSV export replays;
+- exact timestamp shifts of `+10`, `+50`, `+100`, `+250`, and `+500 ms`;
+- 100 repeated events across network, tracking, and sensor streams;
+- controlled missingness at `0%`, `5%`, `10%`, `25%`, and `50%`;
+- provenance preservation from ingestion through alignment, API representation, and export;
+- duplicate, unordered, malformed, and out-of-range input detection;
+- mixed sampling-rate preservation; and
+- complete reconstruction of the canonical 35-record object-drop window.
+
+Run it from `apps/api`:
+
+```bash
+python validation_v1.py
+```
+
+The committed reference run is in [`docs/catem/validation_v1_results.json`](docs/catem/validation_v1_results.json). It uses known synthetic offsets and deterministic residual error; it is not evidence of ESP32, camera, network-emulator, or other hardware accuracy. The executable method and hardware-in-the-loop handoff are documented in [`docs/CATEM_VALIDATION_V1.md`](docs/CATEM_VALIDATION_V1.md).
+
+### CATEM end-to-end pipeline validation
+
+A separately reported 33-check suite sends 300 synthetic events through the actual FastAPI and CATEM implementation path:
+
+```text
+ASGI request parsing
+  -> POST /telemetry
+  -> declared-offset timestamp synchronization
+  -> CATEM assessment
+  -> measurement-contract generation
+  -> GET /telemetry/export/json and /telemetry/export/csv
+```
+
+The run preserves source and aligned timestamps, raw metric values, sampling rates, missingness, and provenance across 10,200 measurement records. Run it with:
+
+```bash
+python pipeline_validation.py
+```
+
+The results are committed in [`docs/catem/pipeline_validation_results.json`](docs/catem/pipeline_validation_results.json). This closes the synthetic end-to-end software-path gap; it still does not validate clock-offset estimation, physical hardware timing, or network transport outside the process.
 
 ---
 
