@@ -17,7 +17,7 @@ The version retains the reference dashboard's major sections:
 5. CATEM propositions and agency-preserving review prompts;
 6. an explicit boundary before experimental future-work modules;
 7. live heuristic streams and the synthetic telemetry simulator;
-8. multimodal, participant-state, sensory, shared-reality, and adaptation prototype panels;
+8. multimodal, heuristic participant-profile, sensory, shared-reality, and adaptation prototype panels;
 9. descriptive rule traces and hypothesis prompts;
 10. core metrics and insufficient-sample analytics; and
 11. the experimental research architecture and session comparison table.
@@ -38,6 +38,8 @@ The supplied August 9 rendering used prediction-like wording in one experimental
 - the card states that no event timing or probability is estimated.
 
 This terminology correction preserves the reference layout while keeping the dashboard consistent with the submitted paper's statement that no predictive model was trained.
+
+The participant profile now identifies its state as a heuristic label, presents fatigue only as a prototype indicator, qualifies two-session relationships as candidate fixture patterns, and names the final composite column `Prototype summary`.
 
 ## Reproduce
 

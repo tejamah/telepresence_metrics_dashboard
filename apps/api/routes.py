@@ -1139,11 +1139,11 @@ def _analytics() -> dict[str, Any]:
 
     relationships = [
         {
-            "label": "Higher latency associated with lower agency",
+            "label": "Candidate pattern: higher latency co-occurs with lower agency in current fixtures",
             "status": "observed" if averages.get("latency", 0) > 90 and averages.get("agency", 100) < 80 else "monitor",
         },
         {
-            "label": "Higher embodiment ↔ better task performance",
+            "label": "Candidate descriptive pattern: higher embodiment and task performance co-vary in current fixtures",
             "status": "descriptive pattern"
             if averages.get("embodiment", 0) >= 70 and averages.get("task_efficiency", 0) >= 70
             else "monitor",

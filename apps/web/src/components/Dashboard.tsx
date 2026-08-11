@@ -605,12 +605,16 @@ function Dashboard({
 
       <section className="panel twin-panel">
         <div className="panel-heading">
-          <h2>Participant-State Profile</h2>
-          <span>experimental heuristic · {digitalTwin?.adaptation_profile}</span>
+          <h2>Heuristic Participant Profile</h2>
+          <span>
+            experimental heuristic · {digitalTwin
+              ? `${digitalTwin.adaptation_profile.replace(/\s+/g, '-')}-label`
+              : 'waiting'}
+          </span>
         </div>
         <div className="metric-list">
           <div className="metric-row">
-            <span>Fatigue index</span>
+            <span>Prototype fatigue indicator</span>
             <strong>{digitalTwin?.fatigue_index}%</strong>
           </div>
           <div className="metric-row">
@@ -785,7 +789,7 @@ function Dashboard({
               <th>Task</th>
               <th>Latency</th>
               <th>Errors</th>
-              <th>Quality</th>
+              <th>Prototype summary</th>
             </tr>
           </thead>
           <tbody>
