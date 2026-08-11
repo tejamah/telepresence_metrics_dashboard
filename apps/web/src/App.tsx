@@ -21,8 +21,8 @@ function App() {
   const latest = data?.latest || sessions.at(-1)
 
   const topInsight = useMemo(() => {
-    if (telemetry?.failure_forecast?.prediction === 'teleoperation instability') {
-      return `A rule-based heuristic flags possible teleoperation instability in ${telemetry.failure_forecast.time_to_event_seconds}s (${Math.round(telemetry.failure_forecast.confidence * 100)}% heuristic score).`
+    if (telemetry?.failure_forecast?.rule_status === 'elevated') {
+      return 'A deterministic threshold rule is active for the current inputs. This is a descriptive review flag, not a prediction.'
     }
     if (!sessions.length) return 'Upload experiment data to activate rule-based descriptive summaries.'
     return sessions.at(-1)?.insight || 'Awaiting embodied presence data.'

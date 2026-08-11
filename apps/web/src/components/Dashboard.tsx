@@ -567,7 +567,7 @@ function Dashboard({
         </div>
         <div className="cognitive-grid">
           <LiveMetric label="Stability" value={cognitive?.cognitive_stability} unit="%" />
-          <LiveMetric label="Instability heuristic" value={cognitive?.collapse_risk_score} unit="%" />
+          <LiveMetric label="Rule activation index" value={cognitive?.collapse_risk_score} unit="" />
           <LiveMetric label="Attention drift" value={cognitive?.attention_drift} unit="%" />
           <LiveMetric label="Stress" value={cognitive?.stress_escalation} unit="" />
         </div>
@@ -575,22 +575,19 @@ function Dashboard({
 
       <section className="panel forecast-panel">
         <div className="panel-heading">
-          <h2>Failure Forecast Heuristic</h2>
-          <span>experimental · {Math.round((forecast?.confidence || 0) * 100)}% heuristic score</span>
+          <h2>Rule-Based Risk Review</h2>
+          <span>experimental · descriptive threshold logic</span>
         </div>
         <div className="forecast-callout">
-          <strong>{forecast?.prediction}</strong>
-          <span>
-            {forecast?.time_to_event_seconds
-              ? `Heuristic flag in ${forecast.time_to_event_seconds} seconds`
-              : 'Control envelope remains stable'}
-          </span>
+          <strong>{forecast?.rule_status === 'elevated' ? 'Elevated input condition' : 'Nominal input condition'}</strong>
+          <span>No event timing or probability is estimated.</span>
         </div>
         <div className="action-list">
-          {forecast?.adaptive_actions?.map((action) => (
+          {forecast?.review_prompts?.map((action) => (
             <span key={action}>{action}</span>
           ))}
         </div>
+        <p className="interpretation-boundary">{forecast?.interpretation_boundary}</p>
       </section>
 
       <section className="panel consciousness-panel">

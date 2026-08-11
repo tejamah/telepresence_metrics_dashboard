@@ -661,17 +661,23 @@ def failure_forecast(metrics: dict[str, float]) -> dict[str, Any]:
         + max(0, metrics.get("workload", 50) - 60) * 0.45
         + max(0, 65 - metrics.get("agency", 75)) * 0.6
     )
-    confidence = round(max(0.35, min(0.94, risk_score / 100 + 0.42)), 2)
-    seconds = round(max(8, 55 - risk_score * 0.45))
+    rule_activation_score = round(max(0, min(100, risk_score)), 1)
+    rule_status = "elevated" if risk_score >= 35 else "nominal"
     return {
-        "prediction": "teleoperation instability" if risk_score >= 35 else "stable control envelope",
-        "time_to_event_seconds": seconds if risk_score >= 35 else None,
-        "confidence": confidence,
-        "adaptive_actions": [
-            "reduce render quality" if metrics.get("fps", 90) < 60 else "maintain render quality",
-            "increase compression" if metrics.get("latency", 0) > 100 else "maintain network profile",
-            "soften haptic intensity" if metrics.get("workload", 0) > 75 else "maintain haptic profile",
+        "prediction": "not_estimated",
+        "time_to_event_seconds": None,
+        "confidence": None,
+        "rule_status": rule_status,
+        "rule_activation_score": rule_activation_score,
+        "review_prompts": [
+            "review rendering settings" if metrics.get("fps", 90) < 60 else "retain current rendering settings",
+            "review network conditions" if metrics.get("latency", 0) > 100 else "retain current network settings",
+            "review workload and haptic settings" if metrics.get("workload", 0) > 75 else "retain current haptic settings",
         ],
+        "interpretation_boundary": (
+            "Deterministic threshold review only; no event time, probability, predictive accuracy, "
+            "diagnosis, or causal effect is estimated."
+        ),
     }
 
 
@@ -747,12 +753,12 @@ def telepresence_language_model(metrics: dict[str, float]) -> dict[str, Any]:
         "reasoning_trace": [
             f"presence continuity is {consciousness['presence_continuity']}%",
             f"dominant explanatory signal: {top_factor}",
-            f"forecast: {forecast['prediction']}",
+            f"rule status: {forecast['rule_status']}",
         ],
-        "adaptive_decision": forecast["adaptive_actions"],
+        "adaptive_decision": forecast["review_prompts"],
         "research_sentence": (
             f"The operator is in a {consciousness['state']} embodiment state with "
-            f"{forecast['prediction']} and {top_factor} as the main explanatory signal."
+            f"a {forecast['rule_status']} descriptive rule condition and {top_factor} as the main flagged input."
         ),
     }
 
@@ -841,8 +847,8 @@ def emotional_ai_companion(metrics: dict[str, float]) -> dict[str, Any]:
     if cognitive["stress_escalation"] == "elevated":
         message = "You appear cognitively overloaded. Reducing environmental complexity and activating stabilization mode."
         tone = "supportive"
-    elif forecast["prediction"] == "teleoperation instability":
-        message = "Instability is emerging. I am prioritizing control confidence and slowing the interaction loop."
+    elif forecast["rule_status"] == "elevated":
+        message = "Current inputs activate an elevated deterministic rule condition. Review the flagged measurements before acting."
         tone = "directive"
     else:
         message = "Presence is holding. I will maintain sensory fidelity and monitor for drift."
@@ -850,7 +856,7 @@ def emotional_ai_companion(metrics: dict[str, float]) -> dict[str, Any]:
     return {
         "tone": tone,
         "message": message,
-        "interventions": forecast["adaptive_actions"],
+        "interventions": forecast["review_prompts"],
         "emotional_state_estimate": "overloaded" if cognitive["stress_escalation"] == "elevated" else "regulated",
     }
 
