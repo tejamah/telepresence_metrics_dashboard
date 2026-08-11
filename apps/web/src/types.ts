@@ -36,8 +36,11 @@ export interface CognitiveState {
 export interface FailureForecast {
   prediction: string
   time_to_event_seconds: number | null
-  confidence: number
-  adaptive_actions: string[]
+  confidence: number | null
+  rule_status: 'nominal' | 'elevated'
+  rule_activation_score: number
+  review_prompts: string[]
+  interpretation_boundary: string
 }
 
 export interface ExplanationFactor {
