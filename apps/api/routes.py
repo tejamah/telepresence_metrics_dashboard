@@ -1149,7 +1149,7 @@ def _analytics() -> dict[str, Any]:
             else "monitor",
         },
         {
-            "label": "Higher workload ↔ more errors",
+            "label": "Candidate descriptive pattern: higher workload co-occurs with more errors in current fixtures",
             "status": "descriptive pattern" if averages.get("workload", 0) > 65 and averages.get("error_rate", 0) > 8 else "monitor",
         },
     ]

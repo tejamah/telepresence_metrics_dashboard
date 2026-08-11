@@ -14,6 +14,8 @@ The complete current dashboard is preserved as the [Embodied Presence Internet v
 
 The current release focuses on measurement organization, timestamp-aware alignment, provenance, missingness, transformation traceability, event-centered inspection, and reproducible software verification.
 
+Additional validation work is maintained separately from the core CATEM v0.2.0 implementation so later experiments do not silently change the evidence associated with this release.
+
 The broader **Embodied Presence Internet** vision is described separately under **Future Research**. Those roadmap items are not claims about implemented or scientifically validated CATEM v0.2.0 capabilities.
 
 ---
