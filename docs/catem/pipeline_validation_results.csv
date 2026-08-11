@@ -1,0 +1,34 @@
+category,test,expected,observed,passed
+api_ingestion,Exact declared timestamp shifts through API,five HTTP 200 responses with 0.0 ms errors,"statuses=[200, 200, 200, 200, 200]; errors_ms=[0.0, 0.0, 0.0, 0.0, 0.0]",True
+api_ingestion,Malformed timestamp rejected by API,HTTP 422,HTTP 422,True
+api_ingestion,Offset-free timestamp rejected by API,HTTP 422,HTTP 422,True
+api_ingestion,Repeated API ingestion status,300 HTTP 200 responses,300/300,True
+api_ingestion,Telemetry stream persistence,300,300,True
+synchronization,Aligned timing observations,300,300,True
+synchronization,Signed alignment errors,match authored residuals,matched=True,True
+synchronization,Mean alignment error,0.0 ms,0.0 ms,True
+synchronization,Mean absolute alignment error,1.2 ms,1.2 ms,True
+synchronization,Median absolute alignment error,1.0 ms,1.0 ms,True
+synchronization,P95 absolute alignment error,2.0 ms,2.0 ms,True
+synchronization,Maximum absolute alignment error,2.0 ms,2.0 ms,True
+measurement_contract,Ingested source timestamps preserved,all submitted events,events=300; complete=True,True
+measurement_contract,Ingested provenance preserved,all submitted events,events=300; complete=True,True
+measurement_contract,Ingested sampling rates preserved,all submitted events,events=300; complete=True,True
+measurement_contract,Ingested metric dictionaries preserved,all submitted events,events=300; complete=True,True
+measurement_contract,Source timestamps propagated,all measurement records,records=10200; complete=True,True
+measurement_contract,Aligned timestamps propagated,all measurement records,records=10200; complete=True,True
+measurement_contract,Provenance propagated unchanged,all measurement records,records=10200; complete=True,True
+measurement_contract,Sampling rates propagated unchanged,all measurement records,records=10200; complete=True,True
+measurement_contract,Raw latency values preserved,all events,events=300; complete=True,True
+measurement_contract,Expected missing metrics explicit,at least one explicit missing record per event,events=300; complete=True,True
+catem_processing,CATEM assessment included,versioned layers and evidence profile for every event,events=300; complete=True,True
+api_export,JSON export endpoint,HTTP 200,HTTP 200,True
+api_export,JSON event completeness,300,300,True
+api_export,JSON event fidelity,exported events equal API responses,complete=True,True
+api_export,JSON provenance integrity,all measurement records,complete=True,True
+api_export,Deterministic JSON export,identical bytes on replay,identical=True,True
+api_export,CSV export endpoint,HTTP 200,HTTP 200,True
+api_export,CSV measurement-record completeness,10200,10200,True
+api_export,CSV provenance integrity,all measurement records,complete=True,True
+api_export,CSV timestamp completeness,source and aligned timestamps on every row,complete=True,True
+api_export,Deterministic CSV export,identical bytes on replay,identical=True,True
