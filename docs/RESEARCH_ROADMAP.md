@@ -1,6 +1,14 @@
 # CATEM Research Roadmap
 
-The current release is a software-verified prototype evaluated with deterministic synthetic fixtures. Research claims advance only through the gated studies in `EMPIRICAL_VALIDATION_PROTOCOL.md`.
+The current release is a software-verified prototype evaluated with deterministic synthetic fixtures. The separate `validation_v1.py` harness strengthens synthetic ground-truth timing and data-integrity testing, but does not satisfy the real-system technical-validation gate. Research claims advance only through the gated studies in `EMPIRICAL_VALIDATION_PROTOCOL.md`.
+
+## Validation v1 bridge: implemented synthetic ground truth
+
+- Replay canonical JSON and CSV exports 100 or more times and compare hashes.
+- Recover exact timestamp shifts at `+10`, `+50`, `+100`, `+250`, and `+500 ms`.
+- Quantify timing error over 100 three-source event trials.
+- Verify controlled missingness, provenance continuity, malformed input detection, mixed sampling rates, and canonical event reconstruction.
+- Use `CATEM_VALIDATION_V1.md` as the method and ESP32-S3 handoff record.
 
 ## Stage 1: content and weighting validity
 
