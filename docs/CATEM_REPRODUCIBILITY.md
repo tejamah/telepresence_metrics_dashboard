@@ -1,27 +1,22 @@
 # CATEM Reproducibility Guide
 
-This page is the reviewer-facing index for CATEM version 0.2.0. The included
+This page indexes reproducibility materials for CATEM version 0.2.0. The included
 records are deterministic software fixtures, not participant data.
 
-The submitted manuscript's metadata and frozen evidence boundary are recorded in
-[`PAPER_VERSION.md`](PAPER_VERSION.md). The paper reports the original 17-check,
-three-replay software-verification baseline. The separate
-[`catem-validation-v1`](https://github.com/tejamah/telepresence_metrics_dashboard/tree/catem-validation-v1)
-branch contains the later 39-check Validation v1 and 33-check end-to-end
-pipeline suites. They are not results reported in the manuscript or paper-version
-artifacts on `main`.
+Additional validation work is maintained separately from the core CATEM v0.2.0
+implementation so later experiments do not silently change the evidence associated
+with this release.
 
 ## Materials
 
 | Item | Location | What it contains |
 |---|---|---|
-| Paper version record | [`PAPER_VERSION.md`](PAPER_VERSION.md) | Submitted manuscript metadata, v0.2.0 evidence baseline, and explicit separation of post-submission validation |
-| Embodied Presence Internet v3 | [`EMBODIED_PRESENCE_INTERNET_V3.md`](EMBODIED_PRESENCE_INTERNET_V3.md) and [`embodied_presence_internet_dashboard_v3.pdf`](embodied_presence_internet_dashboard_v3.pdf) | Version record and 11-page dashboard rendering; only its CATEM evidence views are paper evidence, while later pages remain experimental future-work modules |
+| Embodied Presence Internet v3 | [`EMBODIED_PRESENCE_INTERNET_V3.md`](EMBODIED_PRESENCE_INTERNET_V3.md) and [`embodied_presence_internet_dashboard_v3.pdf`](embodied_presence_internet_dashboard_v3.pdf) | Version record and 11-page dashboard rendering; CATEM evidence views are separated from experimental future-work modules |
 | Dashboard screenshot | [`catem/dashboard_overview_full.png`](catem/dashboard_overview_full.png) | Current live-session, four-layer assessment, cross-cutting condition band, and object-drop event-window views |
 | Sample CSV | [`../data/sample_metrics.csv`](../data/sample_metrics.csv) | Uploadable session records using the documented metric columns |
 | Canonical event fixture | [`catem/catem_specification_v0.2.json`](catem/catem_specification_v0.2.json), key: `event_window_fixture` | Five ordered object-drop samples and their 35 traceable source records |
 | Versioned CATEM specification | [`catem/catem_specification_v0.2.json`](catem/catem_specification_v0.2.json) | Four-layer schema, measurement-record schema, API response schema, transform registry, rule specifications, session fixtures, and the complete canonical object-drop event fixture |
-| Verification results | [`catem/verification_results.json`](catem/verification_results.json) | Environment metadata and the 17 functional, reproducibility, and fault-injection checks reported by the software harness |
+| Verification results | [`catem/verification_results.json`](catem/verification_results.json) | Environment metadata and the 17 functional, reproducibility, and fault-injection checks produced by the software harness |
 
 The object-drop fixture is the `event_window_fixture` object inside the versioned
 specification. It contains five ordered samples at offsets `-2`, `-1`, `0`,
