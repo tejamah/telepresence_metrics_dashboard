@@ -1,14 +1,9 @@
 cff-version: 1.2.0
-message: "If you use CATEM, please cite this software and the corresponding paper when final bibliographic information is available."
+message: "If you use CATEM, reference the repository URL and the software version used."
 title: "CATEM: A Timestamp-Aware Cross-Layer Framework for Telepresence Evaluation"
 type: software
 authors:
-  - family-names: Maheshwara
-    given-names: Teja
-    affiliation: "Pace University, United States"
-  - family-names: Falcone
-    given-names: Sara
-    affiliation: "Pace University, United States"
+  - name: "CATEM Project"
 repository-code: "https://github.com/tejamah/telepresence_metrics_dashboard"
 url: "https://github.com/tejamah/telepresence_metrics_dashboard"
 version: 0.2.0
